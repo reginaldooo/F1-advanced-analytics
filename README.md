@@ -66,7 +66,7 @@ Interestingly, the drivers with the absolute highest statistical consistency (lo
 
 1.  **Clone the Repository**
     ```bash
-    git clone [https://github.com/reginaldooo/F1-advanced-analytics.git](https://github.com/reginaldooo/F1-advanced-analytics.git)
+    git clone https://github.com/reginaldooo/F1-advanced-analytics.git
     ```
 2.  **Install Dependencies**
     ```bash
