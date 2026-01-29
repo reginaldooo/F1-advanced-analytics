@@ -1,0 +1,11 @@
+# Ignore Data Files (Dataset biasanya tidak diupload ke git)
+data/
+*.csv
+
+# Ignore System Files
+.DS_Store
+Thumbs.db
+
+# Ignore Jupyter Checkpoints
+.ipynb_checkpoints/
+__pycache__/
