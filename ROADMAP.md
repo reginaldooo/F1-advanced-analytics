@@ -1,66 +1,47 @@
-# F1 Advanced Analytics: make it a real ML project (free tools only)
+# F1 Advanced Analytics: consolidated plan (supersedes `synchronous-meandering-newell.md` and the old Phase 0 draft)
 
 ## Context
-Project is one notebook (`f1-advanced-analytics.ipynb`, 13 cells) plus README. Current "ML" is K-Means with hardcoded k=4 on 2 features (cell 6), a keyword-matching DNF classifier labelled "NLP" (cell 8), and raw lap-time std. No validation, no supervised model, no train/test split, no tests, no pinned env. A friend also found a real methodology flaw: `Points Per Race` uses raw points across scoring eras (cell 4/6), which skews the x-axis and the clusters.
+Project: `/Users/reginaldo/Documents/Projects/F1-advanced-analytics/F1-advanced-analytics`. Goal: a credible, reproducible, portfolio-grade **driver-comparison** project (Kaggle CSVs, comparison only, no prediction, free tools, Streamlit Cloud delivery). Decisions of 2026-10-19 in `ROADMAP.md` still hold.
 
-Goal: turn it into a credible, reproducible ML project. Free tools only. Discussion/plan only for now; user executes later.
+Cleanup of the earlier plans, which collided or repeated each other:
+- `ROADMAP.md` (repo) = copy of the first plan + decisions; its Phase 0 (single modern points scale, CV) is **superseded** by the era-neutral features below, and its Verification still mentions a supervised model that was dropped. At execution, replace `ROADMAP.md` with this file's content so there is one source of truth.
+- Dropped as redundant/overkill for a comparison-only project on small public data: supervised podium/DNF model, SHAP, time-based split, Optuna, **MLflow, DVC, Evidently**, Docker. Revisit only if a predictive model is added later.
+- README rewrite appeared twice (Phase 0 and Phase 4); now done once per phase, final polish at the end.
+- Criteria analysis (old decision) overlaps the Phase 0 features: it **extends** them, it does not redo them.
 
-## Recommended framework: CRISP-DM style pipeline
-Business understanding -> data understanding -> preparation -> modeling -> evaluation -> deployment. Maps cleanly onto the folders below.
+## Phase 0: era-neutral normalization — DONE in working tree, uncommitted
+Notebook cells 0, 4, 6, 8, 10, 12 now use finish percentile, podium/top-5/win rate, pace-vs-race-median consistency (laps > 107% dropped), `RobustScaler`, k=4. README and `images/*.png` regenerated; baseline preserved in `baseline/`, `images/baseline-v1/`, tag `v1-baseline`.
+Remaining:
+- Tick the before/after checklist in `BASELINE.md` (legends: Moss in, Vettel out; Midfielders 14 -> 51, Backmarkers 201 -> 169; Hamilton consistency rank 80/107, Verstappen 63/107; lap data only from 1996).
+- Commit: `refactor: era-neutral performance and pace-based consistency`, then `docs: update README and figures`.
 
-## Phase 0: Fix the foundation (do first, results change)
-- Recompute points from `positionOrder` under one scale (2010+ 25-18-15-12-10-8-6-4-2-1, DNF = 0). Decide: fastest-lap point, shared drives.
-- Replace raw lap-time std with coefficient of variation (std / mean lap time per driver-race), so circuits and eras are comparable.
-- Add an era-aware lap filter instead of fixed `< 150000` ms.
-- Rerun clustering and charts; update README insights, which will likely change.
+## Phase 1: portfolio hygiene + structure (do now, before the LinkedIn post)
+Replaces old Phase 1, the "Phase 0.5" idea, and the Phase 3 tooling.
+- Layout: `src/f1/{data,features,dnf}.py`, `tests/`, `notebooks/` -> keep a single `f1-advanced-analytics.ipynb` at root for now (EDA/storytelling only, imports from `src/f1`), `reports/figures/`, `docs/`.
+- `src/f1/data.py`: `load_tables()` using `kagglehub` (cache dir) with `data/` override; removes the manual download step and the symlink workaround. `features.py`: `add_finish_pct`, `driver_performance_table`, `pace_consistency` (reuse the exact logic now in cells 4/6/8). `dnf.py`: current keyword classifier (replaced in Phase 2).
+- Environment: `pyproject.toml` (runtime deps + `dev` extra: pytest, ruff, nbstripout, pre-commit); drop the ad-hoc `pip install` line in README.
+- Tests (pytest, written first per TDD rule): `finish_pct` in [0, 1] and = 1 for winner; 107% filter drops only slow laps; pace consistency independent of circuit scale; driver filter (>20 races); cluster naming ordered by win rate. Target 80% coverage on `src/`.
+- Tooling: `Makefile` (`make test`, `make lint`, `make figures`), ruff + pre-commit with nbstripout, GitHub Actions CI (lint + tests on a tiny synthetic fixture, no Kaggle download in CI).
+- Figures: `make figures` regenerates `images/*.png` from `src/`, so README numbers match.
+- Colab badge **skipped**: needs `src/` install + Kaggle credentials, not worth the friction.
+- README: add reproduce steps (`pip install -e .[dev]`, `make test`), keep the 1996+ lap-data caveat.
 
-## Phase 1: Project structure
-```
-f1-advanced-analytics/
-  data/{raw,processed}     # gitignored, DVC-tracked
-  notebooks/               # EDA + storytelling only
-  src/f1/{data,features,models,viz}.py
-  tests/
-  models/ reports/figures/
-  pyproject.toml (or requirements.txt + lockfile)
-  Makefile, .pre-commit-config.yaml, .github/workflows/ci.yml
-```
-Move logic out of cells into `src/` functions, notebooks import them.
+## Phase 2: modeling for comparison
+1. **Clustering properly:** choose k via silhouette + elbow + Davies-Bouldin; compare K-Means vs GMM vs HDBSCAN; seed stability; PCA/UMAP 2D plot.
+2. **Criteria profile (extends Phase 0 features):** add positions gained, driver-error DNF rate, mechanical DNF rate; PCA/correlation redundancy check; teammate-relative versions to separate driver from car.
+3. **Real DNF NLP:** TF-IDF + logistic regression replacing keywords, scored on a hand-labelled sample.
+4. **Cross-era rating:** Elo or Bradley-Terry with driver + constructor effects (answers Fangio vs Verstappen).
 
-## Phase 2: Modeling upgrades (the "looks like ML" core)
-1. **Clustering done properly:** choose k with silhouette + elbow + Davies-Bouldin, compare K-Means vs GMM vs HDBSCAN, check stability across seeds, add PCA/UMAP 2D projection plot.
-2. **Supervised task (needs a real target):** predict podium / points finish / DNF from grid position, driver form, constructor form, circuit, era.
-   - Models: logistic regression baseline, then LightGBM / XGBoost.
-   - **Time-based split** (train on past seasons, test on recent) to avoid leakage; `TimeSeriesSplit` CV.
-   - Metrics: ROC-AUC, PR-AUC, log loss, calibration curve; compare against naive baseline (grid position only).
-3. **Real NLP for DNF status:** replace keyword rules with TF-IDF + logistic regression, then optionally a small sentence-transformer embedding, evaluated against hand-labelled sample.
-4. **Cross-era driver rating:** Elo or Bradley-Terry / mixed-effects model with driver and constructor effects, which separates driver skill from car, directly answers the README question (Fangio vs Verstappen).
-5. **Tuning + explainability:** Optuna for hyperparameters, SHAP for feature importance.
+## Phase 3: delivery
+- Streamlit app on Streamlit Community Cloud reading a small precomputed driver-level table (check Kaggle license before committing derived data).
+- `docs/METHODOLOGY.md` (one doc: data sheet + limitations + model notes) instead of separate model card and data sheet.
+- Final README polish; portfolio post(s).
 
-## Phase 3: MLOps layer (all free)
-- **MLflow** (local) for experiment tracking and model registry.
-- **DVC** (local or free DagsHub remote) for data versioning + `dvc.yaml` pipeline stages.
-- **pytest** for feature/leakage tests, **ruff** + **pre-commit**, **GitHub Actions** CI.
-- **Evidently** for a drift/data-quality report (e.g. era drift).
-- Optional: **Docker** image for reproducibility.
+## Order
+Phase 0 commit -> Phase 1 -> LinkedIn post (English draft already written; add repo link) -> Phase 2.1 -> 2.2 -> 2.4 -> 2.3 -> Phase 3.
 
-## Phase 4: Delivery
-- **Streamlit** app (free on Streamlit Community Cloud): driver explorer, cluster view, podium predictor.
-- **Model card** and **data sheet** in `docs/`, README rewritten with methodology, metrics table, limitations, reproduce steps.
-- Optional extra data: **FastF1** (free, telemetry/weather from 2018+) and **Jolpica-F1** API (Ergast successor) to extend past the Kaggle snapshot.
-
-## Suggested order and effort
-Phase 0 (small) -> Phase 1 (small) -> Phase 2.1 and 2.2 (medium, biggest credibility gain) -> Phase 3 tracking + CI (small) -> Phase 2.4 / 2.3 (medium) -> Phase 4 (medium).
-
-## Decisions (2026-10-19)
-- Goal: **comparison only, no prediction** for now. Drop the supervised podium/DNF model (2.2), SHAP, and time-based split. Keep clustering (2.1), DNF text classifier (2.3), Elo/Bradley-Terry rating (2.4), Optuna only if a tuned model remains.
-- Add **criteria analysis**: build a multi-criteria driver profile (normalized points/race, win and podium rate, CV consistency, positions gained, driver-error DNF rate, mechanical DNF rate), check redundancy with PCA/correlation, and add teammate-relative versions to separate driver from car.
-- Data: **Kaggle CSVs only** for now.
-- Delivery: Streamlit Community Cloud is fine (runs from GitHub, local machine need not stay on). App reads a small precomputed driver-level table, not the raw CSVs. Check the Kaggle license before committing derived data.
-- Baseline of the current state is in `BASELINE.md`, `baseline/`, and `images/baseline-v1/`.
-
-## Verification (when executed)
-- `make test` and CI green; `dvc repro` rebuilds features and models from raw CSVs.
-- MLflow UI shows tracked runs with metrics; supervised model beats the grid-position baseline on the held-out recent seasons.
-- Notebook runs top to bottom from a clean env using the lockfile.
-- README numbers match regenerated figures in `reports/figures/`.
+## Verification
+- `make test` green, coverage >= 80% on `src/`; `make lint` clean; CI green on GitHub.
+- Notebook runs top to bottom in a fresh venv created from `pyproject.toml`.
+- `make figures` output matches README numbers (legends list, Hamilton 80/107, Verstappen 63/107).
+- Tag `v1-baseline` untouched; new work tagged `v2-era-neutral`.

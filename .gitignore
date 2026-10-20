@@ -1,5 +1,6 @@
 # Ignore Data Files (Dataset biasanya tidak diupload ke git)
 data/
+data
 *.csv
 
 # Ignore System Files
