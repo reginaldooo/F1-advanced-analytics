@@ -15,7 +15,7 @@ Lap times start in 1996 (589,081 rows), so the consistency metric covers 107 mod
 - Raw points are not used because scoring changed many times (a win was 8 points in 1950, 25 today).
 
 ## Model
-K-Means (k=4, `RobustScaler`) on finish percentile, podium rate and win rate for drivers with more than 20 races. Clusters are named by mean win rate. k is not yet validated (see roadmap, Phase 2.1).
+K-Means (k=4, `RobustScaler`) on finish percentile, podium rate and win rate for drivers with more than 20 races. Clusters are named by mean win rate. k=4 was validated in `f1.clustering`: silhouette, Davies-Bouldin, elbow and seed stability (mean ARI over 10 seeds) for k=2..10, plus GMM and HDBSCAN comparisons. Silhouette/DB favour k=2 (too coarse); k=4 is the finest split with silhouette > 0.5 and ARI = 1.0. GMM scores lower; HDBSCAN marks 129 of 257 drivers as noise, so the tiers segment a continuum rather than reveal natural groups. UMAP was skipped; PCA is used for the 2D view.
 
 ## Limitations
 - Finish percentile still mixes driver and car; teammate-relative metrics are planned.

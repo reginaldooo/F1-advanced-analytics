@@ -27,7 +27,7 @@ Replaces old Phase 1, the "Phase 0.5" idea, and the Phase 3 tooling.
 - README: add reproduce steps (`pip install -e .[dev]`, `make test`), keep the 1996+ lap-data caveat.
 
 ## Phase 2: modeling for comparison
-1. **Clustering properly:** choose k via silhouette + elbow + Davies-Bouldin; compare K-Means vs GMM vs HDBSCAN; seed stability; PCA/UMAP 2D plot.
+1. **[DONE] Clustering properly:** choose k via silhouette + elbow + Davies-Bouldin; compare K-Means vs GMM vs HDBSCAN; seed stability; PCA/UMAP 2D plot.
 2. **Criteria profile (extends Phase 0 features):** add positions gained, driver-error DNF rate, mechanical DNF rate; PCA/correlation redundancy check; teammate-relative versions to separate driver from car.
 3. **Real DNF NLP:** TF-IDF + logistic regression replacing keywords, scored on a hand-labelled sample.
 4. **Cross-era rating:** Elo or Bradley-Terry with driver + constructor effects (answers Fangio vs Verstappen).
