@@ -1,47 +1,71 @@
-# F1 Advanced Analytics: consolidated plan (supersedes `synchronous-meandering-newell.md` and the old Phase 0 draft)
+# Roadmap and plan (final state)
+
+## Status
+| Step | Status | Commit |
+|---|---|---|
+| Era-neutral features, pace consistency | done | `74b693e` |
+| Package, tests, CI, tooling | done | `56fb74e` |
+| 2.1 k validation, GMM / HDBSCAN comparison | done | `441b8c8` |
+| 2.2 criteria profile (teammate delta, DNF rates) | done | `2b5c811` |
+| 2.0 exclude non-starters | done | `12868d2` |
+| 2.3 hand-labelled DNF statuses + trained fallback | done | `9026d81` |
+| 2.4 cross-era Bradley-Terry rating | done | `2acba7b` |
+| Phase 3 Streamlit app (built, tested locally) | done | `9a43031`, `22686a8` |
+| Deploy on Streamlit Community Cloud | **manual**, see `docs/DEPLOY.md` | - |
+| Add app URL to README and LinkedIn post | after deploy | - |
+
+Not planned (comparison-only project): supervised podium/DNF model, SHAP, MLflow, DVC, Evidently, Docker, Optuna.
+Deviations from the plan below: one `app/data/drivers.csv` instead of two files (PCA coordinates are columns in it); the rating's naive baseline is a constant 0.5 plus a driver-only model; UMAP skipped (PCA only).
+
+---
+
+# F1-advanced-analytics: finish Phase 2 (data fix, DNF model, cross-era rating) and ship the Streamlit app
 
 ## Context
-Project: `/Users/reginaldo/Documents/Projects/F1-advanced-analytics/F1-advanced-analytics`. Goal: a credible, reproducible, portfolio-grade **driver-comparison** project (Kaggle CSVs, comparison only, no prediction, free tools, Streamlit Cloud delivery). Decisions of 2026-10-19 in `ROADMAP.md` still hold.
+Repo: `/Users/reginaldo/Documents/Projects/me/F1-advanced-analytics` (`main` at `73b9257`, CI green, 37 tests, 97% coverage; `.venv` inside). Done so far: era-neutral features, k validation, criteria profile. Remaining roadmap items: 2.4 cross-era rating, 2.3 DNF NLP, Phase 3 delivery. User wants all of it through "Streamlit up". Everything below is TDD (tests first), ruff clean, one commit per step, push after each, CI green before moving on.
 
-Cleanup of the earlier plans, which collided or repeated each other:
-- `ROADMAP.md` (repo) = copy of the first plan + decisions; its Phase 0 (single modern points scale, CV) is **superseded** by the era-neutral features below, and its Verification still mentions a supervised model that was dropped. At execution, replace `ROADMAP.md` with this file's content so there is one source of truth.
-- Dropped as redundant/overkill for a comparison-only project on small public data: supervised podium/DNF model, SHAP, time-based split, Optuna, **MLflow, DVC, Evidently**, Docker. Revisit only if a predictive model is added later.
-- README rewrite appeared twice (Phase 0 and Phase 4); now done once per phase, final polish at the end.
-- Criteria analysis (old decision) overlaps the Phase 0 features: it **extends** them, it does not redo them.
+Read-only exploration found two things that change the order of work:
+1. **Data-quality bug in the existing features.** `results.csv` contains 1,025 "Did not qualify" and 331 "Did not prequalify" rows (plus "Withdrew" 248, "Not classified" 172). `add_finish_pct` counts them in `starters` and `Total Races`, so they act as last-place finishes for cars that never started. This biases `finish_pct`, `Avg Finish Pct`, the >20-race filter and possibly cluster membership.
+2. **The keyword DNF classifier is incomplete.** `+6 Laps` and above, `Transmission` (321), `Turbo` (146), `Fuel system` (155), `Did not qualify` all fall into "Other". Mechanical DNF rates in the criteria profile are understated, and a rating model that drops mechanical retirements would be wrong without a better classifier.
 
-## Phase 0: era-neutral normalization — DONE in working tree, uncommitted
-Notebook cells 0, 4, 6, 8, 10, 12 now use finish percentile, podium/top-5/win rate, pace-vs-race-median consistency (laps > 107% dropped), `RobustScaler`, k=4. README and `images/*.png` regenerated; baseline preserved in `baseline/`, `images/baseline-v1/`, tag `v1-baseline`.
-Remaining:
-- Tick the before/after checklist in `BASELINE.md` (legends: Moss in, Vettel out; Midfielders 14 -> 51, Backmarkers 201 -> 169; Hamilton consistency rank 80/107, Verstappen 63/107; lap data only from 1996).
-- Commit: `refactor: era-neutral performance and pace-based consistency`, then `docs: update README and figures`.
+So the order is: 2.0 data fix -> 2.3 DNF classifier -> re-run profile -> 2.4 rating -> app. The LinkedIn post (`me/Linkedin/4-...md`, still `Post on: TBD`) must be re-checked against the final numbers before publishing; the 10-legends / 80th / 63rd claims may shift.
 
-## Phase 1: portfolio hygiene + structure (do now, before the LinkedIn post)
-Replaces old Phase 1, the "Phase 0.5" idea, and the Phase 3 tooling.
-- Layout: `src/f1/{data,features,dnf}.py`, `tests/`, `notebooks/` -> keep a single `f1-advanced-analytics.ipynb` at root for now (EDA/storytelling only, imports from `src/f1`), `reports/figures/`, `docs/`.
-- `src/f1/data.py`: `load_tables()` using `kagglehub` (cache dir) with `data/` override; removes the manual download step and the symlink workaround. `features.py`: `add_finish_pct`, `driver_performance_table`, `pace_consistency` (reuse the exact logic now in cells 4/6/8). `dnf.py`: current keyword classifier (replaced in Phase 2).
-- Environment: `pyproject.toml` (runtime deps + `dev` extra: pytest, ruff, nbstripout, pre-commit); drop the ad-hoc `pip install` line in README.
-- Tests (pytest, written first per TDD rule): `finish_pct` in [0, 1] and = 1 for winner; 107% filter drops only slow laps; pace consistency independent of circuit scale; driver filter (>20 races); cluster naming ordered by win rate. Target 80% coverage on `src/`.
-- Tooling: `Makefile` (`make test`, `make lint`, `make figures`), ruff + pre-commit with nbstripout, GitHub Actions CI (lint + tests on a tiny synthetic fixture, no Kaggle download in CI).
-- Figures: `make figures` regenerates `images/*.png` from `src/`, so README numbers match.
-- Colab badge **skipped**: needs `src/` install + Kaggle credentials, not worth the friction.
-- README: add reproduce steps (`pip install -e .[dev]`, `make test`), keep the 1996+ lap-data caveat.
+## Step 2.0: exclude non-starters (small, do first)
+- Add `f1.dnf.is_non_start(status)` for: Did not qualify, Did not prequalify, Withdrew, Not classified? (decide: Not classified = started, classified last; keep). Non-starters = DNQ, DNPQ, Withdrew, Excluded, Did not start-type statuses; also require `grid` not NaN where available.
+- `build_master` drops non-starters before `add_finish_pct`.
+- Tests: synthetic race with 3 starters + 2 DNQ -> `starters` = 3, winner pct 1, last 0, DNQ rows absent.
+- Re-run pipeline and **quantify impact** before/after: legends list, cluster sizes, Hamilton/Verstappen consistency ranks, top-10 consistency (consistency uses laps, unaffected except driver filter). Record in `BASELINE.md`. If claims change, update README, METHODOLOGY, and the draft LinkedIn post (do not publish stale numbers).
 
-## Phase 2: modeling for comparison
-1. **[DONE] Clustering properly:** choose k via silhouette + elbow + Davies-Bouldin; compare K-Means vs GMM vs HDBSCAN; seed stability; PCA/UMAP 2D plot.
-2. **[DONE] Criteria profile (extends Phase 0 features):** add positions gained, driver-error DNF rate, mechanical DNF rate; PCA/correlation redundancy check; teammate-relative versions to separate driver from car.
-3. **[DONE] Real DNF NLP:** TF-IDF + logistic regression replacing keywords, scored on a hand-labelled sample.
-4. **[DONE] Cross-era rating:** Elo or Bradley-Terry with driver + constructor effects (answers Fangio vs Verstappen).
+## Step 2.3: DNF status classifier (trained, evaluated)
+- Only 139 distinct `status` strings exist, so the work is labelling, not big NLP. Create `data/labels/status_labels.csv` equivalent committed as `src/f1/status_labels.csv` (not gitignored): all 139 statuses hand-labelled into `Finished`, `Accident/Driver Error`, `Car/Mechanical Failure`, `Did Not Start`, `Other`. I draft labels from F1 knowledge (Puncture, Wheel, Tyre -> mechanical/tyre decision documented; Spun off, Collision, Accident -> driver error; Disqualified, Illness, etc. -> Other). **Labels are model-written; user spot-checks the ambiguous ones** (list them in the PR/commit message).
+- `f1/dnf.py`: keep `classify_dnf` as the keyword baseline; add `train_status_classifier()` (TF-IDF char n-grams + LogisticRegression) and `predict_reason()`. Evaluate with stratified cross-validation on distinct statuses (macro-F1, per-class report) and **frequency-weighted accuracy over `results`** for baseline vs trained.
+- Decision rule: use the trained model in the pipeline only if it beats the keyword baseline on weighted accuracy and macro-F1; otherwise keep rules plus the corrected label table. Either way fix the missing keywords (laps-down finishes, transmission, turbo, fuel).
+- Persist nothing binary: model retrains in seconds from the CSV; app never needs it.
+- Re-run criteria profile with the new reasons; update README insight 3 (Hunt/Mansell) and insight 5 numbers.
 
-## Phase 3: delivery (app built; deployment is a manual step on share.streamlit.io, see docs/DEPLOY.md)
-- Streamlit app on Streamlit Community Cloud reading a small precomputed driver-level table (check Kaggle license before committing derived data).
-- `docs/METHODOLOGY.md` (one doc: data sheet + limitations + model notes) instead of separate model card and data sheet.
-- Final README polish; portfolio post(s).
+## Step 2.4: cross-era driver rating (Bradley-Terry with car effect)
+- Model: per race, every pair (i, j) of starters where i finished ahead of j. Features = onehot(driver i) - onehot(driver j) + onehot(constructor-season i) - onehot(constructor-season j). L2-regularised logistic regression without intercept (scikit-learn, sparse matrices; ~280k pairs). Driver coefficient = skill (constant over career), constructor-season coefficient = car that year. Teammates and drivers who change teams identify the two effects.
+- Pair rules: exclude non-starters and mechanical retirements (from 2.3), keep driver-error DNFs as losses, ties impossible (positionOrder). No pairs for races with fewer than 2 starters.
+- Uncertainty: bootstrap over races (30-50 resamples), report rating with 5-95% interval; drivers with few races get wide intervals. Only drivers with more than 20 races appear in the comparison table.
+- Validation (still "comparison only", no prediction product): GroupKFold by race, held-out pairwise log-loss and accuracy for (a) constructor-season only, (b) driver + constructor, (c) naive baseline (higher finish percentile history). The driver term must improve held-out log-loss, otherwise report that driver skill is not identifiable and say so.
+- Files: `src/f1/rating.py` (`build_pairs`, `fit_rating`, `bootstrap_ratings`, `cross_validate`), `tests/test_rating.py` with synthetic data where a known strong driver in a weak car must come out on top and a weak driver in a dominant car must not.
+- Notebook section 9, figure `images/rating.png` (top drivers with intervals; Fangio vs Verstappen highlighted), README insight, METHODOLOGY (era linkage is weak for the 1950s: ratings across eras rest on drivers whose careers overlap, so intervals are wide).
 
-## Order
-Phase 0 commit -> Phase 1 -> LinkedIn post (English draft already written; add repo link) -> Phase 2.1 -> 2.2 -> 2.4 -> 2.3 -> Phase 3.
+## Phase 3: Streamlit app (Community Cloud)
+- Build step: `src/f1/app_data.py` + `make app-data` produce one small committed table `app/data/drivers.csv` (profile, cluster, pace consistency, rating with interval, teammate delta) and `app/data/pca.csv` (2D coordinates). `.gitignore` currently ignores `*.csv` and `data/`, so add explicit `!app/data/*.csv`. Tests for the builder (columns, no NaN in key fields, row count equals filtered drivers).
+- `app/streamlit_app.py` in the style of `me/pit-stop-risk-engine/app.py` (wide layout, sidebar with title/filters/"Built by Reginaldo Ahnaf" + links, Plotly, `st.cache_data`): tabs **Driver Explorer** (filters by era/cluster/min races, sortable table), **Cluster View** (PCA scatter coloured by tier), **Compare** (two drivers: criteria bars, rating with interval, teammate delta), **How to Read This** (method, caveats: 1996+ laps, tiers = continuum, teammate delta compression).
+- `app/requirements.txt` with pinned `streamlit`, `pandas`, `plotly` only (the app reads precomputed CSVs, no `f1` package or Kaggle access needed).
+- Local check: `streamlit run app/streamlit_app.py --server.headless true`, `curl` the health endpoint, and a headless smoke test with `streamlit.testing.v1.AppTest` (no exceptions on each tab, both compare selections).
+- Licence: the source data derives from Ergast (CC BY-NC-SA 3.0 via the Kaggle dataset). Verify the Kaggle licence text before committing derived data; add attribution in the app footer and README; the project stays non-commercial.
+- **Deployment cannot be done from here**: Streamlit Community Cloud needs the user to sign in with GitHub in the browser (share.streamlit.io, New app, repo `reginaldooo/F1-advanced-analytics`, branch `main`, main file `app/streamlit_app.py`). I will prepare everything, verify locally, and hand over exact steps; after the user deploys, I add the app URL to README and the LinkedIn post and re-check the live page.
+
+## Order and commits
+2.0 `fix: exclude non-starters from finish percentile` -> 2.3 `feat: trained DNF status classifier` -> `docs: refresh profile numbers` -> 2.4 `feat: cross-era Bradley-Terry rating` -> Phase 3 `feat: precomputed app data` -> `feat: streamlit app` -> `docs: app link, licence, final numbers`. Update `ROADMAP.md` ticks and the LinkedIn draft at the end.
 
 ## Verification
-- `make test` green, coverage >= 80% on `src/`; `make lint` clean; CI green on GitHub.
-- Notebook runs top to bottom in a fresh venv created from `pyproject.toml`.
-- `make figures` output matches README numbers (legends list, Hamilton 80/107, Verstappen 63/107).
-- Tag `v1-baseline` untouched; new work tagged `v2-era-neutral`.
+- `pytest` green with coverage >= 80%, `ruff check .` clean, CI green after every push (check with `gh run list`).
+- 2.0: before/after table in `BASELINE.md`; no DNQ/DNPQ rows in `master`.
+- 2.3: classification report printed in the notebook; weighted accuracy of trained vs keyword baseline recorded in METHODOLOGY.
+- 2.4: held-out log-loss table (constructor-only vs driver+constructor vs naive); synthetic recovery test passes; ratings table sanity (Clark/Fangio/Schumacher/Hamilton/Verstappen in plausible order with intervals).
+- App: AppTest passes, local server answers, all numbers in README, app and `me/Linkedin/4-...md` match `app/data/drivers.csv`.
+- Final: user deploys on Streamlit Cloud; live URL loads all four tabs.
