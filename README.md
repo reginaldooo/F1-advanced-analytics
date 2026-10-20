@@ -114,9 +114,25 @@ A Bradley-Terry model on race finishing order (151k pairwise comparisons) estima
     make lint                                 # ruff
     ```
 
+## 🖥️ Streamlit App
+
+An interactive app (Driver Explorer, Cluster View, Compare two drivers, How to Read This) reads a small precomputed table, `app/data/drivers.csv`, so it needs no Kaggle access.
+
+```bash
+make app-data   # rebuild app/data/drivers.csv from the Kaggle data (about 5 seconds)
+make app        # streamlit run app/streamlit_app.py
+```
+
+Deploying on Streamlit Community Cloud is described in [`docs/DEPLOY.md`](docs/DEPLOY.md).
+
+## ⚖️ Data & Attribution
+
+Source: [Formula 1 World Championship 1950-2024](https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020) by Vopani on Kaggle (listed as CC0; the underlying Ergast data is CC BY-NC-SA 3.0). Raw data is not redistributed here; the committed `app/data/drivers.csv` holds derived driver-level statistics only. Credit is given and the project is non-commercial.
+
 ## 🗂️ Project Structure
 
 ```
+app/           Streamlit app and its precomputed table
 src/f1/        data loading, features, clustering + model selection, criteria profile, DNF classifier, cross-era rating, charts
 tests/         pytest suite (synthetic fixtures, no downloads)
 docs/          METHODOLOGY.md (data, features, limitations)

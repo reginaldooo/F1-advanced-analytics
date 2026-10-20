@@ -32,7 +32,7 @@ Replaces old Phase 1, the "Phase 0.5" idea, and the Phase 3 tooling.
 3. **[DONE] Real DNF NLP:** TF-IDF + logistic regression replacing keywords, scored on a hand-labelled sample.
 4. **[DONE] Cross-era rating:** Elo or Bradley-Terry with driver + constructor effects (answers Fangio vs Verstappen).
 
-## Phase 3: delivery
+## Phase 3: delivery (app built; deployment is a manual step on share.streamlit.io, see docs/DEPLOY.md)
 - Streamlit app on Streamlit Community Cloud reading a small precomputed driver-level table (check Kaggle license before committing derived data).
 - `docs/METHODOLOGY.md` (one doc: data sheet + limitations + model notes) instead of separate model card and data sheet.
 - Final README polish; portfolio post(s).

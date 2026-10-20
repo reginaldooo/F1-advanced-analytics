@@ -67,6 +67,11 @@ def compare_algorithms(X: np.ndarray, k: int = 4, seed: int = DEFAULT_SEED) -> p
     return pd.DataFrame([{"method": m, **_score(X, labels)} for m, labels in labelings.items()])
 
 
+def pca_coordinates(X: np.ndarray) -> np.ndarray:
+    """First two principal components of the scaled features."""
+    return PCA(n_components=2, random_state=DEFAULT_SEED).fit_transform(X)
+
+
 def plot_k_selection(table: pd.DataFrame, path: str | Path | None = None) -> None:
     fig, axes = plt.subplots(1, 4, figsize=(16, 3.5))
     panels = [
@@ -92,7 +97,7 @@ def plot_pca(
     path: str | Path | None = None,
     names: np.ndarray | None = None,
 ) -> None:
-    pcs = PCA(n_components=2, random_state=DEFAULT_SEED).fit_transform(X)
+    pcs = pca_coordinates(X)
     fig, ax = plt.subplots(figsize=(8, 6))
     scatter = ax.scatter(pcs[:, 0], pcs[:, 1], c=labels, cmap="viridis", alpha=0.8)
     ax.legend(*scatter.legend_elements(), title="cluster")
