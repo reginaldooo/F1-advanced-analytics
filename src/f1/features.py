@@ -25,10 +25,18 @@ def add_finish_pct(results: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_master(
-    results: pd.DataFrame, drivers: pd.DataFrame, status: pd.DataFrame
+    results: pd.DataFrame,
+    drivers: pd.DataFrame,
+    status: pd.DataFrame,
+    races: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
-    """Join results, drivers and status; drop non-starters; add driver_name, points, finish_pct."""
+    """Join results, drivers and status; drop non-starters; add driver_name, points, finish_pct.
+
+    Pass `races` to also get the season `year` of each result.
+    """
     master = results.merge(drivers, on="driverId").merge(status, on="statusId")
+    if races is not None:
+        master = master.merge(races[["raceId", "year"]], on="raceId")
     master = master[~non_starter_mask(master)].reset_index(drop=True)
     master = master.assign(
         driver_name=master["forename"] + " " + master["surname"],

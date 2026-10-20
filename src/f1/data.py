@@ -9,7 +9,7 @@ import pandas as pd
 
 KAGGLE_DATASET = "rohanrao/formula-1-world-championship-1950-2020"
 DATA_DIR_ENV = "F1_DATA_DIR"
-REQUIRED_TABLES = ("drivers", "results", "status", "lap_times")
+REQUIRED_TABLES = ("drivers", "results", "status", "lap_times", "races")
 
 
 def _resolve_data_dir(data_dir: str | Path | None) -> Path:

@@ -29,8 +29,8 @@ Replaces old Phase 1, the "Phase 0.5" idea, and the Phase 3 tooling.
 ## Phase 2: modeling for comparison
 1. **[DONE] Clustering properly:** choose k via silhouette + elbow + Davies-Bouldin; compare K-Means vs GMM vs HDBSCAN; seed stability; PCA/UMAP 2D plot.
 2. **[DONE] Criteria profile (extends Phase 0 features):** add positions gained, driver-error DNF rate, mechanical DNF rate; PCA/correlation redundancy check; teammate-relative versions to separate driver from car.
-3. **Real DNF NLP:** TF-IDF + logistic regression replacing keywords, scored on a hand-labelled sample.
-4. **Cross-era rating:** Elo or Bradley-Terry with driver + constructor effects (answers Fangio vs Verstappen).
+3. **[DONE] Real DNF NLP:** TF-IDF + logistic regression replacing keywords, scored on a hand-labelled sample.
+4. **[DONE] Cross-era rating:** Elo or Bradley-Terry with driver + constructor effects (answers Fangio vs Verstappen).
 
 ## Phase 3: delivery
 - Streamlit app on Streamlit Community Cloud reading a small precomputed driver-level table (check Kaggle license before committing derived data).

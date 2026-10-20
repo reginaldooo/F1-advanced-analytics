@@ -24,9 +24,14 @@ Redundancy check: win, podium and finish percentile are highly correlated (r 0.6
 ## DNF reasons (`f1.dnf`)
 All 139 distinct `status` values are hand-labelled (`src/f1/status_labels.csv`) as Finished, Accident/Driver Error, Car/Mechanical Failure, Did Not Start or Other. The pipeline uses this table. The earlier keyword rules matched only 32% of the distinct statuses (missing Transmission, Turbo, Fuel system, Puncture and every +6 Laps or more); they are kept as a baseline. A TF-IDF (character n-grams) + logistic regression model trained on the table is the fallback for statuses not in it: leave-one-out accuracy 91% vs 32% for keywords. Its frequency-weighted accuracy (67% vs 89%) is lower only because leave-one-out removes the single `Finished` status (7,674 results), so the table, not the model, is used for known statuses. Effect: mechanical DNF rates rise (e.g. Mansell 24.5% -> 32.8%, Hunt 15.1% -> 29.0%).
 
+## Cross-era rating (`f1.rating`)
+Bradley-Terry on race finishing order: every pair of eligible starters in a race is one observation (who finished ahead). Entry strength = driver skill (constant over the career) + constructor-season effect, fitted jointly with L2-regularised logistic regression (151,308 pairs, 712 drivers, about 1,000 constructor-seasons). Mechanical retirements are removed; driver-error retirements lose to every finisher ahead. Ratings are in Elo-like points (logit x 400 / ln 10); intervals are 5-95% from 30 race-level bootstrap resamples; only drivers with more than 20 eligible races are shown.
+Regularisation C=0.1 was selected by held-out pairwise log-loss over C in {0.03, 0.1, 0.3, 1}. Held-out log-loss (5 race-grouped folds): constant 0.693, car only 0.559, driver only 0.591, driver + car 0.545 (accuracy 72.6%). Robust: Fangio, Stewart, Clark (top 3 for every C) and Verstappen (top 6). Not robust: Hamilton 3rd-28th, Schumacher 5th-31st, Senna 11th-50th across C, because drivers who always had dominant cars cannot be separated from them. Read the output as tiers.
+
 ## Limitations
 - Finish percentile mixes driver and car; teammate delta reduces this but is compressed in dominant cars (both drivers finish near the top) and mixes shared drives and more than two drivers per team in the 1950s.
 - Positions gained mostly reflects starting position, not pure racecraft.
+- Ratings assume constant skill and link eras only through overlapping careers (wide 1950s intervals); elite drivers in dominant cars are weakly identified.
 - DNF labels are hand-written by the author (open to review); ambiguous ones (Damage, Debris, Physical, Retired, Stalled, seat-related) are labelled Other. The trained fallback was only validated with leave-one-out on the 139 known statuses.
 - A driver with few races at a top team can be over-rated; the 20-race filter only partly helps.
 - Results describe the dataset; they are not causal claims about driver skill.

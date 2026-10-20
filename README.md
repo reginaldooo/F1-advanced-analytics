@@ -57,6 +57,13 @@ Beyond finish percentile and win/podium rate, each driver now has racecraft (pos
 * **Teammate delta** adds car-adjusted information (r = 0.43 to 0.52 with results). Top of 237 drivers: Jim Clark, Juan Fangio, Christian Fittipaldi, Emerson Fittipaldi, Pedro Rodriguez; Max Verstappen is 8th.
 * *Caveat: in a dominant car both teammates finish near the top, which compresses the delta (Hamilton ranks 49th of 237). A low delta is not proof of a weaker driver.*
 
+### 6. Fangio vs Verstappen: A Cross-Era Rating
+A Bradley-Terry model on race finishing order (151k pairwise comparisons) estimates each driver's skill with a separate effect for every constructor-season, so teammates and team changes separate driver from car. Mechanical retirements are not counted as losses.
+* **The driver term matters:** held-out log-loss (race-grouped folds) is 0.545 for driver + car vs 0.559 for car only and 0.693 for a coin flip; pairwise accuracy 72.6% vs 70.9%.
+* **Robust top tier:** Fangio, Stewart and Clark stay in the top 3 for every regularisation strength tested, and Max Verstappen stays in the top 6 (4th at the cross-validated setting, rating 262 vs Fangio's 309, intervals overlap).
+* **Not separable from the car:** Hamilton ranges from 3rd to 28th, Schumacher from 5th to 31st and Senna from 11th to 50th depending on regularisation. Beyond the top 4 the bootstrap intervals overlap heavily, so read the ranking as tiers.
+* *Caveats: skill is constant over a career, and eras are linked only through drivers whose careers overlap, so 1950s intervals are wide.*
+
 ---
 
 ## 📈 Visualizations
@@ -69,6 +76,10 @@ Beyond finish percentile and win/podium rate, each driver now has racecraft (pos
 | Choosing k | Clusters in 2D (PCA) | Criteria correlation |
 | :---: | :---: | :---: |
 | ![k selection](images/k-selection.png) | ![PCA](images/clusters-pca.png) | ![Correlation](images/criteria-correlation.png) |
+
+| Cross-era rating |
+| :---: |
+| ![Rating](images/rating.png) |
 
 ---
 
@@ -106,7 +117,7 @@ Beyond finish percentile and win/podium rate, each driver now has racecraft (pos
 ## 🗂️ Project Structure
 
 ```
-src/f1/        data loading, features, clustering + model selection, criteria profile, DNF classifier, charts
+src/f1/        data loading, features, clustering + model selection, criteria profile, DNF classifier, cross-era rating, charts
 tests/         pytest suite (synthetic fixtures, no downloads)
 docs/          METHODOLOGY.md (data, features, limitations)
 baseline/      frozen v1 notebook and README (tag v1-baseline)

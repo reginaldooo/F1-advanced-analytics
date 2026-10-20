@@ -127,3 +127,9 @@ def test_build_master_excludes_non_starters_from_finish_percentile():
     assert len(master) == 3
     assert master["starters"].eq(3).all()
     assert master.loc[master.positionOrder == 3, "finish_pct"].iloc[0] == 0.0
+
+
+def test_build_master_adds_year_when_races_are_given(results, drivers, status):
+    races = pd.DataFrame({"raceId": [1, 2], "year": [1999, 2000]})
+    master = build_master(results, drivers, status, races)
+    assert master.loc[master.raceId == 2, "year"].eq(2000).all()
