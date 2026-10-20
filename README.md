@@ -21,12 +21,15 @@ Formula 1 is one of the most data rich sports in the world. However, historic an
 After analyzing over 70+ years of race data, here are the key findings:
 
 ### 1. Speed $\neq$ Consistency
-While **Lewis Hamilton** and **Max Verstappen** appear as outliers (High Speed + High Consistency), the data reveals a unique group of "Human Metronomes."
-* Drivers like **Gerhard Berger** and **Mika Hakkinen** showed the lowest standard deviation in lap times.
-* **Insight:** A driver can be extremely consistent (reliable for strategy) without having the fastest car on the grid.
+Consistency is measured as the standard deviation of each lap time relative to that race's median pace (laps above 107% of the median are dropped), so circuits are comparable.
+* The most consistent drivers with 50+ races are **Jos Verstappen, Christian Klien, Alexander Wurz, Johnny Herbert** and **Gerhard Berger**. Mostly midfielders.
+* **Hamilton** (rank 80 of 107) and **Max Verstappen** (rank 63 of 107) sit in the lower half on consistency but top the era-neutral performance ranking.
+* **Insight:** A driver can be extremely consistent without being fast, and the fastest drivers are not the most metronomic.
+* *Lap time data only exists from 1996, so this metric covers 107 drivers, not the full history.*
 
 ### 2. The "Legend" Tier is Exclusive
-Using K-Means Clustering on *Win Rate* vs *Points Per Race*, only a small fraction of drivers fall into the **"Dominant Legends"** category.
+Using K-Means Clustering on *Average Finish Percentile*, *Podium Rate* and *Win Rate* (all era-neutral, scaled with `RobustScaler`), only 10 of 257 drivers fall into the **"Dominant Legends"** category: Fangio, Ascari, Moss, Clark, Stewart, Prost, Senna, Schumacher, Hamilton and Verstappen.
+* Raw points were dropped because the scoring system changed many times (a win was worth 8 points in 1950 and 25 today), which skewed the earlier clusters.
 * The model successfully identified high performing drivers who never won a championship as **"Podium Contenders,"** validating their skill level statistically despite the lack of titles.
 
 ### 3. Reliability Analysis: Bad Luck vs. Aggression
@@ -35,7 +38,7 @@ By classifying DNF (Did Not Finish) reasons, we debunked/confirmed historical re
 * **Nigel Mansell:** The data shows he suffered disproportionately from **Mechanical Failures**, suggesting his championship count might have been higher with a more reliable car.
 
 ### 4. The Consistency Paradox
-Interestingly, the drivers with the absolute highest statistical consistency (lowest lap time variance) are rarely multi title World Champions.
+Interestingly, the drivers with the absolute highest statistical consistency (lowest pace variance) are rarely World Champions.
 * **The "Safe Zone" Effect:** Extreme consistency often correlates with driving within a comfort zone (e.g. 95% capacity). To win titles like **Hamilton** or **Verstappen**, drivers must push the car to the absolute physical limit, which naturally introduces slight variance in lap times.
 * **Strategic Variation:** Elite drivers frequently alter their pace intentionally to manage tire degradation or fuel loads. This strategic adaptability negatively impacts their "consistency score" in the raw data but is essential for winning races.
 
@@ -54,10 +57,10 @@ Interestingly, the drivers with the absolute highest statistical consistency (lo
 
 * **Data Cleaning:** Handling 70 years of inconsistent data (e.g., treating `\N` values, normalizing constructor names).
 * **Feature Engineering:**
-    * *Win Rate* & *Points Per Race* for clustering.
-    * *Standard Deviation* of `lap_times` (millions of rows processed).
+    * *Average Finish Percentile*, *Podium Rate* & *Win Rate* for clustering (era-neutral, no raw points).
+    * *Standard Deviation* of lap pace relative to the race median (~589k lap records, laps > 107% of median removed).
     * *NLP based categorization* of the `status` column (mapping "Clutch", "Engine" -> Mechanical).
-* **Machine Learning:** K-Means Clustering (`sklearn`) to create driver personas.
+* **Machine Learning:** K-Means Clustering (`sklearn`, `RobustScaler`, k=4) to create driver personas.
 * **Visualization:** Seaborn & Matplotlib for high dimensional data representation.
 
 ---
@@ -77,7 +80,7 @@ Interestingly, the drivers with the absolute highest statistical consistency (lo
     * Place `drivers.csv`, `results.csv`, `status.csv`, and `lap_times.csv` inside the `data/` folder.
     * *(Note: Data is not included in this repo due to size limits).*
 4.  **Run the Notebook**
-    Open `F1_Advanced_Analytics.ipynb` in Jupyter Notebook or VS Code.
+    Open `f1-advanced-analytics.ipynb` in Jupyter Notebook or VS Code.
 
 ---
 
