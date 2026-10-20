@@ -1,0 +1,140 @@
+status,label
+Accident,Accident/Driver Error
+Collision,Accident/Driver Error
+Collision damage,Accident/Driver Error
+Fatal accident,Accident/Driver Error
+Spun off,Accident/Driver Error
+Alternator,Car/Mechanical Failure
+Axle,Car/Mechanical Failure
+Battery,Car/Mechanical Failure
+Brake duct,Car/Mechanical Failure
+Brakes,Car/Mechanical Failure
+Broken wing,Car/Mechanical Failure
+CV joint,Car/Mechanical Failure
+Chassis,Car/Mechanical Failure
+Clutch,Car/Mechanical Failure
+Cooling system,Car/Mechanical Failure
+Crankshaft,Car/Mechanical Failure
+Differential,Car/Mechanical Failure
+Distributor,Car/Mechanical Failure
+Driveshaft,Car/Mechanical Failure
+Drivetrain,Car/Mechanical Failure
+ERS,Car/Mechanical Failure
+Electrical,Car/Mechanical Failure
+Electronics,Car/Mechanical Failure
+Engine,Car/Mechanical Failure
+Engine fire,Car/Mechanical Failure
+Engine misfire,Car/Mechanical Failure
+Exhaust,Car/Mechanical Failure
+Fire,Car/Mechanical Failure
+Front wing,Car/Mechanical Failure
+Fuel,Car/Mechanical Failure
+Fuel leak,Car/Mechanical Failure
+Fuel pipe,Car/Mechanical Failure
+Fuel pressure,Car/Mechanical Failure
+Fuel pump,Car/Mechanical Failure
+Fuel rig,Car/Mechanical Failure
+Fuel system,Car/Mechanical Failure
+Gearbox,Car/Mechanical Failure
+Halfshaft,Car/Mechanical Failure
+Handling,Car/Mechanical Failure
+Heat shield fire,Car/Mechanical Failure
+Hydraulics,Car/Mechanical Failure
+Ignition,Car/Mechanical Failure
+Injection,Car/Mechanical Failure
+Launch control,Car/Mechanical Failure
+Magneto,Car/Mechanical Failure
+Mechanical,Car/Mechanical Failure
+Oil leak,Car/Mechanical Failure
+Oil line,Car/Mechanical Failure
+Oil pipe,Car/Mechanical Failure
+Oil pressure,Car/Mechanical Failure
+Oil pump,Car/Mechanical Failure
+Out of fuel,Car/Mechanical Failure
+Overheating,Car/Mechanical Failure
+Pneumatics,Car/Mechanical Failure
+Power Unit,Car/Mechanical Failure
+Power loss,Car/Mechanical Failure
+Puncture,Car/Mechanical Failure
+Radiator,Car/Mechanical Failure
+Rear wing,Car/Mechanical Failure
+Refuelling,Car/Mechanical Failure
+Spark plugs,Car/Mechanical Failure
+Steering,Car/Mechanical Failure
+Supercharger,Car/Mechanical Failure
+Suspension,Car/Mechanical Failure
+Technical,Car/Mechanical Failure
+Throttle,Car/Mechanical Failure
+Track rod,Car/Mechanical Failure
+Transmission,Car/Mechanical Failure
+Turbo,Car/Mechanical Failure
+Tyre,Car/Mechanical Failure
+Tyre puncture,Car/Mechanical Failure
+Undertray,Car/Mechanical Failure
+Vibrations,Car/Mechanical Failure
+Water leak,Car/Mechanical Failure
+Water pipe,Car/Mechanical Failure
+Water pressure,Car/Mechanical Failure
+Water pump,Car/Mechanical Failure
+Wheel,Car/Mechanical Failure
+Wheel bearing,Car/Mechanical Failure
+Wheel nut,Car/Mechanical Failure
+Wheel rim,Car/Mechanical Failure
+107% Rule,Did Not Start
+Did not prequalify,Did Not Start
+Did not qualify,Did Not Start
+Safety concerns,Did Not Start
+Withdrew,Did Not Start
++1 Lap,Finished
++10 Laps,Finished
++11 Laps,Finished
++12 Laps,Finished
++13 Laps,Finished
++14 Laps,Finished
++15 Laps,Finished
++16 Laps,Finished
++17 Laps,Finished
++18 Laps,Finished
++19 Laps,Finished
++2 Laps,Finished
++20 Laps,Finished
++21 Laps,Finished
++22 Laps,Finished
++23 Laps,Finished
++24 Laps,Finished
++25 Laps,Finished
++26 Laps,Finished
++29 Laps,Finished
++3 Laps,Finished
++30 Laps,Finished
++38 Laps,Finished
++4 Laps,Finished
++42 Laps,Finished
++44 Laps,Finished
++46 Laps,Finished
++49 Laps,Finished
++5 Laps,Finished
++6 Laps,Finished
++7 Laps,Finished
++8 Laps,Finished
++9 Laps,Finished
+Finished,Finished
+Damage,Other
+Debris,Other
+Disqualified,Other
+Driver Seat,Other
+Driver unwell,Other
+Excluded,Other
+Eye injury,Other
+Illness,Other
+Injured,Other
+Injury,Other
+Not classified,Other
+Not restarted,Other
+Physical,Other
+Retired,Other
+Safety,Other
+Safety belt,Other
+Seat,Other
+Stalled,Other
+Underweight,Other

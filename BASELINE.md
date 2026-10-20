@@ -56,3 +56,6 @@ Snapshot of the project as of commit `78f7c3b` (2026-01-29). Use this as the "be
 | Top-10 most consistent | Jos Verstappen ... Coulthard | unchanged |
 | k=4 silhouette / seed stability | 0.56 / 1.00 | 0.54 / 0.98 (k=5: 0.43 / 0.56) |
 | HDBSCAN noise | 129 of 257 | 66 of 246 |
+
+## Update 3: DNF status labels
+Hand-labelled all 139 statuses; the old keyword rules matched 32% of them (missing Transmission, Turbo, Fuel system, Puncture, +6 Laps and above). Mechanical DNF rate: Hunt 15.1% -> 29.0%, Mansell 24.5% -> 32.8%. The v1 claim "Mansell suffered disproportionately from mechanical failures" no longer holds as an outlier (Collins, Andretti and others are higher); the Hunt claim holds.

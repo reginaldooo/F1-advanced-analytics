@@ -16,7 +16,7 @@ Formula 1 is one of the most data rich sports in the world. However, historic an
 **The Solution:** This project utilizes an advanced data driven approach:
 1.  **Unsupervised Learning (K-Means)** to segment drivers based on performance metrics, not opinions.
 2.  **Telemetry Analysis** (Lap Times) to measure driver consistency ("The Human Metronome").
-3.  **Text Classification** on race status to separate "Bad Luck" (Mechanical Failure) from "Driver Error" (Crashes).
+3.  **Status classification**: a hand-labelled table of all 139 race statuses (with a trained TF-IDF fallback for unseen ones) separates "Bad Luck" (Mechanical Failure) from "Driver Error" (Crashes).
 
 ---
 
@@ -39,9 +39,10 @@ Using K-Means Clustering on *Average Finish Percentile*, *Podium Rate* and *Win 
 * The model successfully identified high performing drivers who never won a championship as **"Podium Contenders,"** validating their skill level statistically despite the lack of titles.
 
 ### 3. Reliability Analysis: Bad Luck vs. Aggression
-By classifying DNF (Did Not Finish) reasons, we debunked/confirmed historical reputations:
-* **James Hunt:** Data confirms his reputation as an aggressive driver, with a high percentage of DNFs caused by **Accidents/Collisions**.
-* **Nigel Mansell:** The data shows he suffered disproportionately from **Mechanical Failures**, suggesting his championship count might have been higher with a more reliable car.
+By classifying DNF (Did Not Finish) reasons, we tested historical reputations:
+* **James Hunt:** Confirmed. Among top-tier drivers he has the highest share of races ending in **Accidents/Collisions** (21.5%).
+* **Nigel Mansell:** *Not* confirmed as an outlier. About a third of his races (33%) ended in mechanical failure, but Peter Collins, Mario Andretti and others are higher. Mechanical attrition mostly tracks the era: older cars broke more, whoever drove them.
+* *Correction:* the earlier keyword rules missed statuses such as Transmission, Turbo and Fuel system, which understated mechanical failures (Mansell 24.5% before, 32.8% now).
 
 ### 4. The Consistency Paradox
 Interestingly, the drivers with the absolute highest statistical consistency (lowest pace variance) are rarely World Champions.
@@ -50,11 +51,11 @@ Interestingly, the drivers with the absolute highest statistical consistency (lo
 
 ### 5. Which Criteria Actually Add Information?
 Beyond finish percentile and win/podium rate, each driver now has racecraft (positions gained), reliability (driver-error and mechanical DNF rates) and a teammate-relative score (finish percentile minus the other driver in the same car, 20+ shared races).
-* **Redundancy:** win rate, podium rate and finish percentile correlate at r = 0.63 to 0.86, and the first principal component explains 69% of the variance. They measure mostly the same thing.
-* **Positions gained** correlates *negatively* with podium rate (r = -0.51): front-runners start near the front and have little to gain, so it reflects grid position as much as racecraft.
-* **Mechanical DNF rate** is nearly independent of performance (|r| < 0.1), a clean "car luck" axis. James Hunt's driver-error DNF rate (21.5%) and Nigel Mansell's mechanical DNF rate (24.5%) support the reliability reading above.
-* **Teammate delta** adds car-adjusted information (r = 0.43 to 0.53 with results). Top of 251 drivers: Jim Clark, Juan Fangio, Emerson Fittipaldi, Pedro Rodriguez; Max Verstappen is 9th.
-* *Caveat: in a dominant car both teammates finish near the top, which compresses the delta (Hamilton ranks 58th). A low delta is not proof of a weaker driver.*
+* **Redundancy:** win rate, podium rate and finish percentile correlate at r = 0.66 to 0.86, and the first principal component explains 66% of the variance. They measure mostly the same thing.
+* **Positions gained** correlates *negatively* with podium rate (r = -0.50): front-runners start near the front and have little to gain, so it reflects grid position as much as racecraft. It also correlates with mechanical DNF rate (r = 0.56): in unreliable eras many cars retire, so finishers gain places.
+* **Mechanical DNF rate** is nearly independent of performance (|r| <= 0.11), a clean "car luck" axis.
+* **Teammate delta** adds car-adjusted information (r = 0.43 to 0.52 with results). Top of 237 drivers: Jim Clark, Juan Fangio, Christian Fittipaldi, Emerson Fittipaldi, Pedro Rodriguez; Max Verstappen is 8th.
+* *Caveat: in a dominant car both teammates finish near the top, which compresses the delta (Hamilton ranks 49th of 237). A low delta is not proof of a weaker driver.*
 
 ---
 
@@ -77,7 +78,7 @@ Beyond finish percentile and win/podium rate, each driver now has racecraft (pos
 * **Feature Engineering:**
     * *Average Finish Percentile*, *Podium Rate* & *Win Rate* for clustering (era-neutral, no raw points).
     * *Standard Deviation* of lap pace relative to the race median (~589k lap records, laps > 107% of median removed).
-    * *NLP based categorization* of the `status` column (mapping "Clutch", "Engine" -> Mechanical).
+    * *Status classification*: 139 hand-labelled statuses (`src/f1/status_labels.csv`) plus a TF-IDF + logistic regression fallback for unseen statuses (leave-one-out accuracy 91% vs 32% for the old keyword rules).
 * **Machine Learning:** K-Means Clustering (`sklearn`, `RobustScaler`, k=4) to create driver personas.
 * **Visualization:** Seaborn & Matplotlib for high dimensional data representation.
 

@@ -30,6 +30,9 @@ dev = [
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+f1 = ["status_labels.csv"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--cov=f1 --cov-report=term-missing --cov-fail-under=80"

@@ -15,3 +15,5 @@ __pycache__/
 .venv/
 .pytest_cache/
 .ruff_cache/
+!src/f1/status_labels.csv
+!app/data/*.csv
