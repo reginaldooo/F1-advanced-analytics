@@ -17,8 +17,13 @@ Lap times start in 1996 (589,081 rows), so the consistency metric covers 107 mod
 ## Model
 K-Means (k=4, `RobustScaler`) on finish percentile, podium rate and win rate for drivers with more than 20 races. Clusters are named by mean win rate. k=4 was validated in `f1.clustering`: silhouette, Davies-Bouldin, elbow and seed stability (mean ARI over 10 seeds) for k=2..10, plus GMM and HDBSCAN comparisons. Silhouette/DB favour k=2 (too coarse); k=4 is the finest split with silhouette > 0.5 and ARI = 1.0. GMM scores lower; HDBSCAN marks 129 of 257 drivers as noise, so the tiers segment a continuum rather than reveal natural groups. UMAP was skipped; PCA is used for the 2D view.
 
+## Criteria profile (`f1.profile`)
+Per driver (more than 20 races): finish percentile, win and podium rate, positions gained (grid minus finish, classified finishes from a real grid slot only), driver-error and mechanical DNF rate (share of starts, from the keyword classifier), and teammate delta (finish percentile minus the other driver(s) in the same car and race, kept only with 20+ shared races; 251 of 257 drivers qualify).
+Redundancy check: win, podium and finish percentile are highly correlated (r 0.63-0.86; PC1 = 69% of variance). Positions gained is negatively correlated with podium rate (r = -0.51) because front-runners start near the front. Mechanical DNF rate is almost independent of performance. Teammate delta correlates moderately (0.43-0.53) with results. The profile is for analysis only; clustering still uses the three features above.
+
 ## Limitations
-- Finish percentile still mixes driver and car; teammate-relative metrics are planned.
+- Finish percentile mixes driver and car; teammate delta reduces this but is compressed in dominant cars (both drivers finish near the top) and mixes shared drives and more than two drivers per team in the 1950s.
+- Positions gained mostly reflects starting position, not pure racecraft.
 - The DNF classifier is keyword matching, not a trained model.
 - A driver with few races at a top team can be over-rated; the 20-race filter only partly helps.
 - Results describe the dataset; they are not causal claims about driver skill.

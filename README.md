@@ -48,6 +48,14 @@ Interestingly, the drivers with the absolute highest statistical consistency (lo
 * **The "Safe Zone" Effect:** Extreme consistency often correlates with driving within a comfort zone (e.g. 95% capacity). To win titles like **Hamilton** or **Verstappen**, drivers must push the car to the absolute physical limit, which naturally introduces slight variance in lap times.
 * **Strategic Variation:** Elite drivers frequently alter their pace intentionally to manage tire degradation or fuel loads. This strategic adaptability negatively impacts their "consistency score" in the raw data but is essential for winning races.
 
+### 5. Which Criteria Actually Add Information?
+Beyond finish percentile and win/podium rate, each driver now has racecraft (positions gained), reliability (driver-error and mechanical DNF rates) and a teammate-relative score (finish percentile minus the other driver in the same car, 20+ shared races).
+* **Redundancy:** win rate, podium rate and finish percentile correlate at r = 0.63 to 0.86, and the first principal component explains 69% of the variance. They measure mostly the same thing.
+* **Positions gained** correlates *negatively* with podium rate (r = -0.51): front-runners start near the front and have little to gain, so it reflects grid position as much as racecraft.
+* **Mechanical DNF rate** is nearly independent of performance (|r| < 0.1), a clean "car luck" axis. James Hunt's driver-error DNF rate (21.5%) and Nigel Mansell's mechanical DNF rate (24.5%) support the reliability reading above.
+* **Teammate delta** adds car-adjusted information (r = 0.43 to 0.53 with results). Top of 251 drivers: Jim Clark, Juan Fangio, Emerson Fittipaldi, Pedro Rodriguez; Max Verstappen is 9th.
+* *Caveat: in a dominant car both teammates finish near the top, which compresses the delta (Hamilton ranks 58th). A low delta is not proof of a weaker driver.*
+
 ---
 
 ## 📈 Visualizations
@@ -57,9 +65,9 @@ Interestingly, the drivers with the absolute highest statistical consistency (lo
 | :---: | :---: | :---: |
 | ![Matrix](images/performance-matrix.png) | ![Reliability](images/reliability-analysis.png) | ![Human Metronome](images/human-metronome.png) |
 
-| Choosing k | Clusters in 2D (PCA) |
-| :---: | :---: |
-| ![k selection](images/k-selection.png) | ![PCA](images/clusters-pca.png) |
+| Choosing k | Clusters in 2D (PCA) | Criteria correlation |
+| :---: | :---: | :---: |
+| ![k selection](images/k-selection.png) | ![PCA](images/clusters-pca.png) | ![Correlation](images/criteria-correlation.png) |
 
 ---
 
@@ -97,7 +105,7 @@ Interestingly, the drivers with the absolute highest statistical consistency (lo
 ## 🗂️ Project Structure
 
 ```
-src/f1/        data loading, features, clustering + model selection, DNF classifier, charts
+src/f1/        data loading, features, clustering + model selection, criteria profile, DNF classifier, charts
 tests/         pytest suite (synthetic fixtures, no downloads)
 docs/          METHODOLOGY.md (data, features, limitations)
 baseline/      frozen v1 notebook and README (tag v1-baseline)
