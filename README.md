@@ -1,8 +1,12 @@
 # 🏎️ F1 Advanced Analytics: Speed, Consistency & Reliability (1950-2024)
 
-![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
-![Data Science](https://img.shields.io/badge/Data%20Science-Clustering%20|%20NLP%20|%20Statistics-green)
-![Status](https://img.shields.io/badge/Status-Completed-success)
+[![GitHub](https://img.shields.io/badge/GitHub-reginaldooo-181717?logo=github&style=flat-square)](https://github.com/reginaldooo)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-farrel--reginaldo-0A66C2?logo=linkedin&style=flat-square)](https://linkedin.com/in/farrel-reginaldo)
+[![Kaggle](https://img.shields.io/badge/Data-Kaggle%20F1-20BEFF?logo=kaggle&style=flat-square)](https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020)
+[![Python](https://img.shields.io/badge/Python-3.9+-3776AB?logo=python&style=flat-square)](https://python.org)
+[![CI](https://img.shields.io/github/actions/workflow/status/reginaldooo/F1-advanced-analytics/ci.yml?branch=main&label=CI&style=flat-square)](https://github.com/reginaldooo/F1-advanced-analytics/actions/workflows/ci.yml)
+
+> **"How do you compare F1 drivers across eras without letting points systems and cars decide?"**
 
 ## 📖 Project Background & Motivation
 Formula 1 is one of the most data rich sports in the world. However, historic analysis often suffers from **Recency Bias** (favoring current drivers) or **Nostalgia Bias** (favoring legends without context). Furthermore, looking solely at "Championship Titles" ignores the nuance of car reliability and consistency.
