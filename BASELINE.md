@@ -40,5 +40,5 @@ Snapshot of the project as of commit `78f7c3b` (2026-01-29). Use this as the "be
 - [x] Which v1 claims survive, which flip:
   - Survives: only 10 of 257 drivers are "Dominant Legends" (Moss in, Vettel out); Hunt/Mansell DNF reading unchanged.
   - Changes: Midfielders 14 -> 51, Backmarkers 201 -> 169 (clusters more balanced).
-  - Flips: Berger/Hakkinen are no longer the most consistent (Berger is top 7, Hakkinen mid-table); Hamilton ranks 80/107 and Verstappen 63/107 on consistency.
+  - Flips: Berger/Hakkinen are no longer the most consistent (Berger is 7th among 50+ race drivers, Hakkinen is 93rd of 107, Brundle 92nd); Hamilton ranks 80/107 and Verstappen 63/107 on consistency.
   - Caveat: lap times exist only from 1996, so consistency covers 107 drivers.

@@ -26,7 +26,8 @@ After analyzing over 70+ years of race data, here are the key findings:
 
 ### 1. Speed $\neq$ Consistency
 Consistency is measured as the standard deviation of each lap time relative to that race's median pace (laps above 107% of the median are dropped), so circuits are comparable.
-* The most consistent drivers with 50+ races are **Jos Verstappen, Christian Klien, Alexander Wurz, Johnny Herbert** and **Gerhard Berger**. Mostly midfielders.
+* The most consistent drivers with 50+ races are **Jos Verstappen, Christian Klien, Alexander Wurz, Johnny Herbert** and **Mika Salo** (Gerhard Berger is 7th). Almost all are midfielders or backmarkers.
+* **Mika Häkkinen** (93rd of 107), **Martin Brundle** (92nd) and **Michael Schumacher** (94th) rank near the bottom, the opposite of the earlier version of this analysis.
 * **Hamilton** (rank 80 of 107) and **Max Verstappen** (rank 63 of 107) sit in the lower half on consistency but top the era-neutral performance ranking.
 * **Insight:** A driver can be extremely consistent without being fast, and the fastest drivers are not the most metronomic.
 * *Lap time data only exists from 1996, so this metric covers 107 drivers, not the full history.*
