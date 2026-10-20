@@ -33,8 +33,8 @@ Consistency is measured as the standard deviation of each lap time relative to t
 * *Lap time data only exists from 1996, so this metric covers 107 drivers, not the full history.*
 
 ### 2. The "Legend" Tier is Exclusive
-Using K-Means Clustering on *Average Finish Percentile*, *Podium Rate* and *Win Rate* (all era-neutral, scaled with `RobustScaler`), only 10 of 257 drivers fall into the **"Dominant Legends"** category: Fangio, Ascari, Moss, Clark, Stewart, Prost, Senna, Schumacher, Hamilton and Verstappen.
-* **Why k=4:** silhouette and Davies-Bouldin favour k=2 (backmarkers vs everyone else), which is too coarse. k=4 is the finest split with silhouette above 0.5 and perfect seed stability (ARI = 1.0); silhouette drops from 0.56 to 0.46 at k=5. GMM scores lower, and HDBSCAN leaves about half of the drivers (129 of 257) unassigned, so the tiers are a segmentation of a continuum, not natural groups.
+Using K-Means Clustering on *Average Finish Percentile*, *Podium Rate* and *Win Rate* (all era-neutral, scaled with `RobustScaler`), only 10 of 246 drivers fall into the **"Dominant Legends"** category: Fangio, Ascari, Moss, Clark, Stewart, Prost, Senna, Schumacher, Hamilton and Verstappen.
+* **Why k=4:** silhouette and Davies-Bouldin favour k=2 (backmarkers vs everyone else), which is too coarse. k=4 is the finest split with silhouette above 0.5 (0.54) and near-perfect seed stability (ARI = 0.98); at k=5 silhouette drops to 0.43 and stability to 0.56. GMM scores lower, and HDBSCAN leaves 66 of 246 drivers (27%) unassigned, so the tiers are a segmentation of a continuum, not natural groups.
 * Raw points were dropped because the scoring system changed many times (a win was worth 8 points in 1950 and 25 today), which skewed the earlier clusters.
 * The model successfully identified high performing drivers who never won a championship as **"Podium Contenders,"** validating their skill level statistically despite the lack of titles.
 

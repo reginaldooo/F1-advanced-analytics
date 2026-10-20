@@ -6,6 +6,8 @@ import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import RobustScaler
 
+from f1.dnf import non_starter_mask
+
 MAX_PACE_RATIO = 1.07
 MIN_RACES = 20
 CLUSTER_FEATURES = ["Avg Finish Pct", "Podium Rate", "Win Rate"]
@@ -25,8 +27,9 @@ def add_finish_pct(results: pd.DataFrame) -> pd.DataFrame:
 def build_master(
     results: pd.DataFrame, drivers: pd.DataFrame, status: pd.DataFrame
 ) -> pd.DataFrame:
-    """Join results, drivers and status; add driver_name, numeric points and finish_pct."""
+    """Join results, drivers and status; drop non-starters; add driver_name, points, finish_pct."""
     master = results.merge(drivers, on="driverId").merge(status, on="statusId")
+    master = master[~non_starter_mask(master)].reset_index(drop=True)
     master = master.assign(
         driver_name=master["forename"] + " " + master["surname"],
         points=pd.to_numeric(master["points"], errors="coerce").fillna(0),

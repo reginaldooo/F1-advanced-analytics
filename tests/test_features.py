@@ -106,3 +106,24 @@ def test_pace_consistency_is_independent_of_circuit_length():
     short = pace_consistency(_laps(1)).set_index("Driver Name")
     long_ = pace_consistency(_laps(2.5)).set_index("Driver Name")
     pd.testing.assert_frame_equal(short, long_, rtol=1e-3)
+
+
+def test_build_master_excludes_non_starters_from_finish_percentile():
+    results = pd.DataFrame(
+        {
+            "raceId": [1] * 5,
+            "driverId": [1, 2, 3, 4, 5],
+            "statusId": [1, 1, 1, 3, 3],
+            "positionOrder": [1, 2, 3, 4, 5],
+            "grid": [1, 2, 3, 0, 0],
+            "points": ["10", "6", "4", "0", "0"],
+        }
+    )
+    drivers = pd.DataFrame(
+        {"driverId": [1, 2, 3, 4, 5], "forename": list("abcde"), "surname": list("vwxyz")}
+    )
+    status = pd.DataFrame({"statusId": [1, 3], "status": ["Finished", "Did not qualify"]})
+    master = build_master(results, drivers, status)
+    assert len(master) == 3
+    assert master["starters"].eq(3).all()
+    assert master.loc[master.positionOrder == 3, "finish_pct"].iloc[0] == 0.0

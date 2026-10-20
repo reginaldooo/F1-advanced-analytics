@@ -38,7 +38,21 @@ Snapshot of the project as of commit `78f7c3b` (2026-01-29). Use this as the "be
 ## Before/after checklist for the article
 - [x] Re-run with era-neutral performance (finish percentile, podium/win rate) instead of raw points; compare against `images/baseline-v1/performance-matrix.png`.
 - [x] Which v1 claims survive, which flip:
-  - Survives: only 10 of 257 drivers are "Dominant Legends" (Moss in, Vettel out); Hunt/Mansell DNF reading unchanged.
+  - Survives: only 10 of 246 drivers are "Dominant Legends" (Moss in, Vettel out); Hunt/Mansell DNF reading unchanged.
   - Changes: Midfielders 14 -> 51, Backmarkers 201 -> 169 (clusters more balanced).
   - Flips: Berger/Hakkinen are no longer the most consistent (Berger is 7th among 50+ race drivers, Hakkinen is 93rd of 107, Brundle 92nd); Hamilton ranks 80/107 and Verstappen 63/107 on consistency.
   - Caveat: lap times exist only from 1996, so consistency covers 107 drivers.
+
+## Update 2: non-starters excluded (data-quality fix)
+`results.csv` includes rows for drivers who never started (Did not qualify 1,025, Did not prequalify 331, 107% rule, grid-less withdrawals). They were counted as last place. They are now dropped in `build_master` (`f1.dnf.non_starter_mask`).
+
+| | Before | After |
+|---|---|---|
+| Result rows | 26,759 | 25,211 |
+| Drivers with 20+ races | 257 | 246 |
+| Dominant Legends | 10 (same names) | 10 (same names) |
+| Backmarkers / Midfielders / Podium Contenders | 169 / 51 / 27 | 151 / 54 / 31 |
+| Hamilton / Verstappen consistency rank | 80 / 63 of 107 | unchanged |
+| Top-10 most consistent | Jos Verstappen ... Coulthard | unchanged |
+| k=4 silhouette / seed stability | 0.56 / 1.00 | 0.54 / 0.98 (k=5: 0.43 / 0.56) |
+| HDBSCAN noise | 129 of 257 | 66 of 246 |
