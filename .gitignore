@@ -16,4 +16,5 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 !src/f1/status_labels.csv
+!app/data/
 !app/data/*.csv
