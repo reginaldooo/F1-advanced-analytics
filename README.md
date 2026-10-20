@@ -1,6 +1,6 @@
 # 🏎️ F1 Advanced Analytics: Speed, Consistency & Reliability (1950-2024)
 
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
+![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
 ![Data Science](https://img.shields.io/badge/Data%20Science-Clustering%20|%20NLP%20|%20Statistics-green)
 ![Status](https://img.shields.io/badge/Status-Completed-success)
 
@@ -67,20 +67,34 @@ Interestingly, the drivers with the absolute highest statistical consistency (lo
 
 ## 🚀 How to Run Locally
 
-1.  **Clone the Repository**
+1.  **Clone and install**
     ```bash
     git clone https://github.com/reginaldooo/F1-advanced-analytics.git
+    cd F1-advanced-analytics
+    pip install -e ".[dev]"
     ```
-2.  **Install Dependencies**
+2.  **Data**
+    * Nothing to download by hand: `f1.data.load_tables()` reads `./data`, then `$F1_DATA_DIR`, then downloads the [Kaggle dataset](https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020) with `kagglehub`.
+    * *(Data is not included in this repo.)*
+3.  **Run**
     ```bash
-    pip install pandas numpy matplotlib seaborn scikit-learn
+    jupyter lab f1-advanced-analytics.ipynb   # explore
+    make figures                              # re-run the notebook and regenerate images/
+    make test                                 # pytest + coverage (>= 80%)
+    make lint                                 # ruff
     ```
-3.  **Download Data**
-    * Download the F1 Dataset (1950-2024) from [Kaggle](https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020).
-    * Place `drivers.csv`, `results.csv`, `status.csv`, and `lap_times.csv` inside the `data/` folder.
-    * *(Note: Data is not included in this repo due to size limits).*
-4.  **Run the Notebook**
-    Open `f1-advanced-analytics.ipynb` in Jupyter Notebook or VS Code.
+
+## 🗂️ Project Structure
+
+```
+src/f1/        data loading, features, clustering, DNF classifier, charts
+tests/         pytest suite (synthetic fixtures, no downloads)
+docs/          METHODOLOGY.md (data, features, limitations)
+baseline/      frozen v1 notebook and README (tag v1-baseline)
+f1-advanced-analytics.ipynb   storytelling notebook, imports from src/f1
+```
+
+See [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md) for features and limitations and [`ROADMAP.md`](ROADMAP.md) for what is next.
 
 ---
 

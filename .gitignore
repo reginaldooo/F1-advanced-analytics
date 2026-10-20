@@ -10,3 +10,8 @@ Thumbs.db
 # Ignore Jupyter Checkpoints
 .ipynb_checkpoints/
 __pycache__/
+.coverage
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
