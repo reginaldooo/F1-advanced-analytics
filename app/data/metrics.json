@@ -1,0 +1,244 @@
+{
+  "data": {
+    "results_rows": 26759,
+    "lap_rows": 589081,
+    "drivers_profiled": 246,
+    "drivers_with_consistency": 107,
+    "drivers_with_teammate_delta": 237
+  },
+  "clustering": {
+    "chosen_k": 4,
+    "k_table": [
+      {
+        "k": 2,
+        "silhouette": 0.776354324637651,
+        "davies_bouldin": 0.44656912205154997,
+        "inertia": 448.58756882799685,
+        "stability": 1.0
+      },
+      {
+        "k": 3,
+        "silhouette": 0.6283414323126226,
+        "davies_bouldin": 0.5502775712732025,
+        "inertia": 198.8565983459394,
+        "stability": 1.0
+      },
+      {
+        "k": 4,
+        "silhouette": 0.5382473041417124,
+        "davies_bouldin": 0.6306888343362331,
+        "inertia": 136.57505939667806,
+        "stability": 0.9836243907184951
+      },
+      {
+        "k": 5,
+        "silhouette": 0.4273542334242135,
+        "davies_bouldin": 0.737162333354828,
+        "inertia": 109.49592260809158,
+        "stability": 0.5563073876799742
+      },
+      {
+        "k": 6,
+        "silhouette": 0.4300262328048705,
+        "davies_bouldin": 0.7133550799162465,
+        "inertia": 82.75829610720308,
+        "stability": 0.9965784611926354
+      },
+      {
+        "k": 7,
+        "silhouette": 0.4297367920112021,
+        "davies_bouldin": 0.7043151460450681,
+        "inertia": 67.32070464392284,
+        "stability": 0.9834889923633426
+      },
+      {
+        "k": 8,
+        "silhouette": 0.4130106532518522,
+        "davies_bouldin": 0.7383686718762301,
+        "inertia": 57.95624618257004,
+        "stability": 0.8683538722560392
+      },
+      {
+        "k": 9,
+        "silhouette": 0.4093452657248493,
+        "davies_bouldin": 0.782547597449996,
+        "inertia": 51.23825263992009,
+        "stability": 0.8506197502822846
+      },
+      {
+        "k": 10,
+        "silhouette": 0.39711412467811,
+        "davies_bouldin": 0.7741597396785387,
+        "inertia": 44.93221785469605,
+        "stability": 0.9715471501227698
+      }
+    ],
+    "algorithms": [
+      {
+        "method": "K-Means",
+        "clusters": 4,
+        "noise": 0,
+        "silhouette": 0.5382473041417125,
+        "davies_bouldin": 0.6306888343362331
+      },
+      {
+        "method": "GMM",
+        "clusters": 4,
+        "noise": 0,
+        "silhouette": 0.4632738860998717,
+        "davies_bouldin": 0.8210421854563685
+      },
+      {
+        "method": "HDBSCAN",
+        "clusters": 5,
+        "noise": 66,
+        "silhouette": 0.565764122844037,
+        "davies_bouldin": 0.5456351513867475
+      }
+    ],
+    "n_drivers": 246
+  },
+  "reliability": {
+    "classifiers": [
+      {
+        "method": "Keywords",
+        "accuracy": 0.31654676258992803,
+        "macro_f1": 0.46185726038667213,
+        "weighted_accuracy": 0.8884113756119436
+      },
+      {
+        "method": "Trained (leave-one-out)",
+        "accuracy": 0.9136690647482014,
+        "macro_f1": 0.8872417930822704,
+        "weighted_accuracy": 0.6718860943981464
+      }
+    ],
+    "label_counts": {
+      "Accident/Driver Error": 5,
+      "Car/Mechanical Failure": 76,
+      "Did Not Start": 5,
+      "Finished": 34,
+      "Other": 19
+    },
+    "n_statuses": 139
+  },
+  "rating": {
+    "c": 0.1,
+    "folds": 5,
+    "cv": [
+      {
+        "model": "Constant",
+        "log_loss": 0.6931471805599452,
+        "accuracy": 0.5
+      },
+      {
+        "model": "Car only",
+        "log_loss": 0.5590079806132267,
+        "accuracy": 0.7087791227378468
+      },
+      {
+        "model": "Driver only",
+        "log_loss": 0.5908300398919761,
+        "accuracy": 0.6863682658455945
+      },
+      {
+        "model": "Driver + car",
+        "log_loss": 0.5451879555494462,
+        "accuracy": 0.726121505893648
+      }
+    ],
+    "c_grid": [
+      {
+        "C": 0.03,
+        "log_loss": 0.5493726406274644,
+        "accuracy": 0.7246014304073357
+      },
+      {
+        "C": 0.1,
+        "log_loss": 0.5451879555494462,
+        "accuracy": 0.726121505893648
+      },
+      {
+        "C": 0.3,
+        "log_loss": 0.5493665904221122,
+        "accuracy": 0.7252820768134061
+      },
+      {
+        "C": 1.0,
+        "log_loss": 0.5563363836754001,
+        "accuracy": 0.7241121786852739
+      }
+    ],
+    "n_pairs": 151308,
+    "n_drivers": 712,
+    "n_car_seasons": 993
+  },
+  "profile": {
+    "pc1_share": 0.6550121476910881,
+    "correlation": {
+      "Avg Finish Pct": {
+        "Avg Finish Pct": 1.0,
+        "Win Rate": 0.6572188384690271,
+        "Podium Rate": 0.8348845153971528,
+        "Positions Gained": -0.30821949577721375,
+        "Driver-Error DNF Rate": -0.3029575411116903,
+        "Mechanical DNF Rate": -0.029145351954906022,
+        "Teammate Delta": 0.5206848200817947
+      },
+      "Win Rate": {
+        "Avg Finish Pct": 0.6572188384690271,
+        "Win Rate": 1.0,
+        "Podium Rate": 0.8592613816495532,
+        "Positions Gained": -0.39729739775873585,
+        "Driver-Error DNF Rate": -0.25579462543112963,
+        "Mechanical DNF Rate": -0.07747375958677596,
+        "Teammate Delta": 0.4257289762471211
+      },
+      "Podium Rate": {
+        "Avg Finish Pct": 0.8348845153971528,
+        "Win Rate": 0.8592613816495532,
+        "Podium Rate": 1.0,
+        "Positions Gained": -0.5000061225593936,
+        "Driver-Error DNF Rate": -0.33415298818271716,
+        "Mechanical DNF Rate": -0.10803090171755231,
+        "Teammate Delta": 0.4559248076055782
+      },
+      "Positions Gained": {
+        "Avg Finish Pct": -0.30821949577721375,
+        "Win Rate": -0.39729739775873585,
+        "Podium Rate": -0.5000061225593936,
+        "Positions Gained": 1.0,
+        "Driver-Error DNF Rate": 0.3377908469267,
+        "Mechanical DNF Rate": 0.5608116394605823,
+        "Teammate Delta": -0.18543973618088036
+      },
+      "Driver-Error DNF Rate": {
+        "Avg Finish Pct": -0.3029575411116903,
+        "Win Rate": -0.25579462543112963,
+        "Podium Rate": -0.33415298818271716,
+        "Positions Gained": 0.3377908469267,
+        "Driver-Error DNF Rate": 1.0,
+        "Mechanical DNF Rate": 0.07479193020017157,
+        "Teammate Delta": -0.3284174564595527
+      },
+      "Mechanical DNF Rate": {
+        "Avg Finish Pct": -0.029145351954906022,
+        "Win Rate": -0.07747375958677596,
+        "Podium Rate": -0.10803090171755231,
+        "Positions Gained": 0.5608116394605823,
+        "Driver-Error DNF Rate": 0.07479193020017157,
+        "Mechanical DNF Rate": 1.0,
+        "Teammate Delta": -0.06923583541837738
+      },
+      "Teammate Delta": {
+        "Avg Finish Pct": 0.5206848200817947,
+        "Win Rate": 0.4257289762471211,
+        "Podium Rate": 0.4559248076055782,
+        "Positions Gained": -0.18543973618088036,
+        "Driver-Error DNF Rate": -0.3284174564595527,
+        "Mechanical DNF Rate": -0.06923583541837738,
+        "Teammate Delta": 1.0
+      }
+    }
+  }
+}

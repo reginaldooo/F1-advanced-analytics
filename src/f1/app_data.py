@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from f1.app_metrics import build_metrics, write_metrics
 from f1.clustering import pca_coordinates, scale_features
 from f1.data import load_tables
 from f1.features import build_master, cluster_drivers, pace_consistency
@@ -68,7 +69,10 @@ def assemble_app_table(
     return table[APP_COLUMNS]
 
 
-def build_app_table(data_dir: str | Path | None = None, n_boot: int = 30) -> pd.DataFrame:
+def build_app_outputs(
+    data_dir: str | Path | None = None, n_boot: int = 30
+) -> tuple[pd.DataFrame, dict]:
+    """The driver table the app reads and the model-quality metrics for its Methodology tab."""
     tables = load_tables(data_dir)
     master = build_master(tables["results"], tables["drivers"], tables["status"], tables["races"])
     profile = cluster_drivers(build_profile(master))
@@ -79,7 +83,8 @@ def build_app_table(data_dir: str | Path | None = None, n_boot: int = 30) -> pd.
     laps = laps.assign(driver_name=laps["forename"] + " " + laps["surname"])
     consistency = pace_consistency(laps)
 
-    ratings = bootstrap_ratings(build_pairs(master), n_boot=n_boot, seed=0)
+    pairs = build_pairs(master)
+    ratings = bootstrap_ratings(pairs, n_boot=n_boot, seed=0)
     ratings = ratings[ratings["Races"] > MIN_RACES]
 
     seasons = (
@@ -96,7 +101,13 @@ def build_app_table(data_dir: str | Path | None = None, n_boot: int = 30) -> pd.
             "Nationality": drivers["nationality"],
         }
     )
-    return assemble_app_table(profile, consistency, ratings, seasons, meta)
+    table = assemble_app_table(profile, consistency, ratings, seasons, meta)
+    metrics = build_metrics(tables, profile, consistency, pairs, scale_features(profile))
+    return table, metrics
+
+
+def build_app_table(data_dir: str | Path | None = None, n_boot: int = 30) -> pd.DataFrame:
+    return build_app_outputs(data_dir, n_boot)[0]
 
 
 def write_app_table(table: pd.DataFrame, path: str | Path = APP_DATA_PATH) -> Path:
@@ -107,8 +118,9 @@ def write_app_table(table: pd.DataFrame, path: str | Path = APP_DATA_PATH) -> Pa
 
 
 def main() -> None:
-    path = write_app_table(build_app_table())
-    print(f"Wrote {path}")
+    table, metrics = build_app_outputs()
+    print(f"Wrote {write_app_table(table)}")
+    print(f"Wrote {write_metrics(metrics)}")
 
 
 if __name__ == "__main__":
