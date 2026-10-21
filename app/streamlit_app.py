@@ -163,7 +163,7 @@ with tab2:
             height=620,
         )
         fig.update_traces(marker={"size": 9, "line": {"width": 0.5, "color": "white"}})
-        st.plotly_chart(fig, width="stretch")
+        st.plotly_chart(fig, use_container_width=True)
     st.caption(
         "Four tiers from K-Means (k=4) on finish percentile, podium rate and win rate. "
         "k was validated, but HDBSCAN leaves 27% of drivers unassigned: the tiers segment a "
@@ -213,7 +213,7 @@ with tab3:
                             fill="toself", line={"color": color}, opacity=0.6)
         )
     radar.update_layout(polar={"radialaxis": {"range": [0, 100]}}, height=480)
-    st.plotly_chart(radar, width="stretch")
+    st.plotly_chart(radar, use_container_width=True)
     note = "Percentile among all rated drivers (higher is better)."
     if skipped:
         note += f" Not shown (no data for one driver): {', '.join(skipped)}. Lap data is 1996+."
@@ -226,7 +226,7 @@ with tab3:
     st.dataframe(detail.style.format("{:.3f}", na_rep="n/a"), width="stretch")
 
     st.markdown("#### Cross-era rating, top 20 plus selected drivers")
-    st.plotly_chart(rating_chart(drivers, [left, right]), width="stretch")
+    st.plotly_chart(rating_chart(drivers, [left, right]), use_container_width=True)
     st.caption(
         "Robust: Fangio, Stewart and Clark stay in the top 3 for every regularisation strength "
         "tested and Verstappen in the top 6. Drivers who always had dominant cars (Hamilton, "
