@@ -13,3 +13,5 @@ The app only needs the committed table `app/data/drivers.csv`, no Kaggle access.
 5. Copy the app URL into the README and the LinkedIn post.
 
 After changing the analysis, run `make app-data`, commit `app/data/drivers.csv` and push; the app redeploys automatically.
+
+The dark theme (papaya orange, jet black, carbon gray) lives in `.streamlit/config.toml`; chart colors are constants at the top of `app/streamlit_app.py`.

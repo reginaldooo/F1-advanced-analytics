@@ -14,11 +14,17 @@ DATA_PATH = Path(__file__).parent / "data" / "drivers.csv"
 REPO_URL = "https://github.com/reginaldooo/F1-advanced-analytics"
 
 TIER_ORDER = ["Dominant Legends", "Podium Contenders", "Midfielders", "Backmarkers"]
+PAPAYA = "#FF6A00"
+JET_BLACK = "#0D0D0D"
+ARCTIC_WHITE = "#F5F5F5"
+RACE_BLUE = "#00A7E1"
+STEEL_GRAY = "#6B7077"  # lighter than carbon gray (#2B2D30) so it reads on the dark background
+
 TIER_COLOR = {
-    "Dominant Legends": "#E10600",
-    "Podium Contenders": "#FF8700",
-    "Midfielders": "#4C72B0",
-    "Backmarkers": "#9AA5B1",
+    "Dominant Legends": PAPAYA,
+    "Podium Contenders": RACE_BLUE,
+    "Midfielders": ARCTIC_WHITE,
+    "Backmarkers": STEEL_GRAY,
 }
 # (column, label, higher_is_better) for the percentile radar in the Compare tab.
 RADAR_CRITERIA = [
@@ -56,7 +62,7 @@ def rating_chart(df: pd.DataFrame, selected: list, top: int = 20) -> go.Figure:
         [rated.nsmallest(top, "Rating Rank"), rated[rated["Driver Name"].isin(selected)]]
     ).drop_duplicates("Driver Name")
     shown = shown.sort_values("Rating")
-    colors = ["#E10600" if n in selected else "#4C72B0" for n in shown["Driver Name"]]
+    colors = [PAPAYA if n in selected else RACE_BLUE for n in shown["Driver Name"]]
     fig = go.Figure(
         go.Scatter(
             x=shown["Rating"],
@@ -162,7 +168,7 @@ with tab2:
             hover_data={"Total Races": True, "Avg Finish Pct": ":.2f", "Win Rate": ":.1%"},
             height=620,
         )
-        fig.update_traces(marker={"size": 9, "line": {"width": 0.5, "color": "white"}})
+        fig.update_traces(marker={"size": 9, "line": {"width": 0.5, "color": JET_BLACK}})
         st.plotly_chart(fig, use_container_width=True)
     st.caption(
         "Four tiers from K-Means (k=4) on finish percentile, podium rate and win rate. "
@@ -205,7 +211,7 @@ with tab3:
     usable = [(c, label) for c, label, _ in RADAR_CRITERIA if pct[c].notna().all()]
     skipped = [label for c, label, _ in RADAR_CRITERIA if not pct[c].notna().all()]
     radar = go.Figure()
-    for name, color in zip([left, right], ["#E10600", "#4C72B0"]):
+    for name, color in zip([left, right], [PAPAYA, RACE_BLUE]):
         values = [pct.loc[name, c] for c, _ in usable]
         labels = [label for _, label in usable]
         radar.add_trace(

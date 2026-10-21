@@ -50,3 +50,12 @@ def test_filters_that_match_nothing_show_empty_state_not_an_error(app):
     search = next(t for t in app.sidebar.text_input if t.label == "Search driver")
     search.input("zzzz-no-such-driver").run()
     assert not app.exception
+
+
+def test_theme_config_uses_palette_and_tiers_are_colored():
+    config = (APP.parents[1] / ".streamlit" / "config.toml").read_text()
+    for hex_color in ("#FF6A00", "#0D0D0D", "#2B2D30", "#F5F5F5"):
+        assert hex_color in config
+    source = APP.read_text()
+    for tier in ("Dominant Legends", "Podium Contenders", "Midfielders", "Backmarkers"):
+        assert f'"{tier}": ' in source.split("TIER_COLOR = {")[1].split("}")[0]
