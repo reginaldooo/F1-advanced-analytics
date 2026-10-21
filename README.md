@@ -119,7 +119,7 @@ A Bradley-Terry model on race finishing order (151k pairwise comparisons) estima
 
 **Live app: https://f1-advanced-analytics.streamlit.app/**
 
-An interactive app (Driver Explorer, Cluster View, Compare two drivers, How to Read This) reads a small precomputed table, `app/data/drivers.csv`, so it needs no Kaggle access.
+An interactive app (Driver Explorer, Cluster View, Compare two drivers, Methodology) reads a small precomputed table, `app/data/drivers.csv`, so it needs no Kaggle access.
 
 ```bash
 make app-data   # rebuild app/data/drivers.csv from the Kaggle data (about 5 seconds)

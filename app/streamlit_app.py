@@ -3,6 +3,7 @@ F1 Driver Comparison: era-neutral profiles, tiers and a cross-era rating.
 Reads the precomputed table app/data/drivers.csv (built by `make app-data`).
 """
 
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -10,16 +11,14 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+from methodology import render as render_methodology
+from theme import ARCTIC_WHITE, JET_BLACK, PAPAYA, RACE_BLUE, STEEL_GRAY
+
 DATA_PATH = Path(__file__).parent / "data" / "drivers.csv"
+METRICS_PATH = Path(__file__).parent / "data" / "metrics.json"
 REPO_URL = "https://github.com/reginaldooo/F1-advanced-analytics"
 
 TIER_ORDER = ["Dominant Legends", "Podium Contenders", "Midfielders", "Backmarkers"]
-PAPAYA = "#FF6A00"
-JET_BLACK = "#0D0D0D"
-ARCTIC_WHITE = "#F5F5F5"
-RACE_BLUE = "#00A7E1"
-STEEL_GRAY = "#6B7077"  # lighter than carbon gray (#2B2D30) so it reads on the dark background
-
 TIER_COLOR = {
     "Dominant Legends": PAPAYA,
     "Podium Contenders": RACE_BLUE,
@@ -42,6 +41,11 @@ st.set_page_config(page_title="F1 Driver Comparison", page_icon="🏎", layout="
 @st.cache_data
 def load_drivers() -> pd.DataFrame:
     return pd.read_csv(DATA_PATH)
+
+
+@st.cache_data
+def load_metrics() -> dict:
+    return json.loads(METRICS_PATH.read_text())
 
 
 def season_label(row: pd.Series) -> str:
@@ -116,7 +120,7 @@ st.sidebar.markdown("Reginaldo Ahnaf")
 st.sidebar.markdown(f"[GitHub]({REPO_URL}) · [LinkedIn](https://linkedin.com/in/farrel-reginaldo)")
 
 tab1, tab2, tab3, tab4 = st.tabs(
-    ["Driver Explorer", "Cluster View", "Compare", "How to Read This"]
+    ["Driver Explorer", "Cluster View", "Compare", "Methodology"]
 )
 
 # ── Tab 1: Driver Explorer ───────────────────────────────────────────────────
@@ -239,38 +243,8 @@ with tab3:
         "Schumacher, Senna) cannot be cleanly separated from them. Read the list as tiers."
     )
 
-# ── Tab 4: How to Read This ──────────────────────────────────────────────────
+# ── Tab 4: Methodology ───────────────────────────────────────────────────────
 with tab4:
-    st.subheader("How to read this")
-    st.markdown(
-        f"""
-**Question.** How do you compare F1 drivers across eras without letting points systems and cars
-decide?
-
-**Era-neutral performance.** Finish percentile (1 = win, 0 = last starter), win, podium and top-5
-rate. Raw points are not used because a win paid 8 points in 1950 and 25 today. Drivers who never
-started (DNQ, DNPQ) are excluded.
-
-**Tiers.** K-Means (k=4, robust scaling), named by mean win rate. k was checked with silhouette,
-Davies-Bouldin, elbow and seed stability.
-
-**Reliability.** All 139 race statuses are hand-labelled as driver error or mechanical; labels
-are the author's and open to review.
-
-**Teammate delta.** Finish percentile minus the other driver(s) in the same car (20+ shared
-races). In a dominant car both finish near the top, which compresses it: a low value is not
-proof of a weaker driver.
-
-**Pace consistency.** Std of each lap relative to the race median pace (laps above 107% of the
-median removed). Lap times exist only from 1996, so older drivers show n/a.
-
-**Cross-era rating.** Bradley-Terry on finishing order with a separate effect for every
-constructor-season. Skill is assumed constant over a career, eras are linked only through
-overlapping careers (wide 1950s intervals) and drivers with dominant cars are weakly identified.
-
-**Data.** [Formula 1 World Championship 1950-2024 on Kaggle](https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020)
-by Vopani (listed as CC0 on Kaggle; the underlying Ergast data is CC BY-NC-SA 3.0, so credit is
-given and this app is non-commercial).
-Code, tests and methodology: [{REPO_URL}]({REPO_URL}).
-"""
-    )
+    st.subheader("Methodology")
+    st.caption("What each step does, the formula, the reason, and how well it works.")
+    render_methodology(load_metrics())

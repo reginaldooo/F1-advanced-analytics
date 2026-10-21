@@ -41,11 +41,12 @@ f1 = ["status_labels.csv"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["app"]  # streamlit puts the script dir on sys.path; AppTest does not
 addopts = "--cov=f1 --cov-report=term-missing --cov-fail-under=80"
 
 [tool.ruff]
 line-length = 100
-src = ["src", "tests"]
+src = ["src", "tests", "app"]
 extend-exclude = ["baseline"]
 
 [tool.ruff.lint]

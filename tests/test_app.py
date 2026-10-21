@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -24,11 +25,11 @@ def test_app_data_is_committed_and_complete():
 
 def test_app_renders_without_exceptions_and_has_four_tabs(app):
     assert not app.exception
-    assert [t.label for t in app.tabs] == [
+    assert [t.label for t in app.tabs][:4] == [
         "Driver Explorer",
         "Cluster View",
         "Compare",
-        "How to Read This",
+        "Methodology",
     ]
 
 
@@ -59,3 +60,15 @@ def test_theme_config_uses_palette_and_tiers_are_colored():
     source = APP.read_text()
     for tier in ("Dominant Legends", "Podium Contenders", "Midfielders", "Backmarkers"):
         assert f'"{tier}": ' in source.split("TIER_COLOR = {")[1].split("}")[0]
+
+
+def test_methodology_has_six_sub_tabs_and_formulas(app):
+    labels = [t.label for t in app.tabs][4:]
+    assert labels == ["Overview", "Features", "Tiers", "Reliability", "Rating", "Limits & Data"]
+    assert len(app.latex) >= 8
+
+
+def test_committed_metrics_have_every_section_the_methodology_tab_reads():
+    metrics = json.loads((APP.parent / "data" / "metrics.json").read_text())
+    assert set(metrics) == {"data", "clustering", "reliability", "rating", "profile"}
+    assert 0.5 < metrics["rating"]["cv"][3]["accuracy"] < 1

@@ -35,3 +35,5 @@ Regularisation C=0.1 was selected by held-out pairwise log-loss over C in {0.03,
 - DNF labels are hand-written by the author (open to review); ambiguous ones (Damage, Debris, Physical, Retired, Stalled, seat-related) are labelled Other. The trained fallback was only validated with leave-one-out on the 139 known statuses.
 - A driver with few races at a top team can be over-rated; the 20-race filter only partly helps.
 - Results describe the dataset; they are not causal claims about driver skill.
+
+The Methodology tab of the Streamlit app shows these same steps with formulas; its numbers are generated from this code into `app/data/metrics.json` by `make app-data`.
