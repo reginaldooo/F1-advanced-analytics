@@ -4,6 +4,7 @@
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-farrel--reginaldo-0A66C2?logo=linkedin&style=flat-square)](https://linkedin.com/in/farrel-reginaldo)
 [![Kaggle](https://img.shields.io/badge/Data-Kaggle%20F1-20BEFF?logo=kaggle&style=flat-square)](https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020)
 [![Python](https://img.shields.io/badge/Python-3.9+-3776AB?logo=python&style=flat-square)](https://python.org)
+[![Live App](https://img.shields.io/badge/Live%20App-Streamlit-FF4B4B?logo=streamlit&style=flat-square)](https://f1-advanced-analytics.streamlit.app/)
 [![CI](https://img.shields.io/github/actions/workflow/status/reginaldooo/F1-advanced-analytics/ci.yml?branch=main&label=CI&style=flat-square)](https://github.com/reginaldooo/F1-advanced-analytics/actions/workflows/ci.yml)
 
 > **"How do you compare F1 drivers across eras without letting points systems and cars decide?"**
@@ -115,6 +116,8 @@ A Bradley-Terry model on race finishing order (151k pairwise comparisons) estima
     ```
 
 ## 🖥️ Streamlit App
+
+**Live app: https://f1-advanced-analytics.streamlit.app/**
 
 An interactive app (Driver Explorer, Cluster View, Compare two drivers, How to Read This) reads a small precomputed table, `app/data/drivers.csv`, so it needs no Kaggle access.
 
