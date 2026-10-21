@@ -90,7 +90,7 @@ def features(metrics: dict) -> None:
     _section("Sensitivity check: one points system")
     rescored = metrics["profile"]["rescored_correlation"]
     st.markdown(
-        "Suggested by Ian Wright: put every race on one points system. Every race in the dataset "
+        "A reader suggested putting every race on one points system. Every race in the dataset "
         "(1950-2024) is rescored with the same modern scale (25-18-15-12-10-8-6-4-2-1, no "
         "fastest-lap point, no sprints), then averaged per race. It is **not** used for the "
         "tiers. Correlation with the clustering features: "

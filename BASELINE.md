@@ -20,7 +20,7 @@ Snapshot of the project as of commit `78f7c3b` (2026-01-29). Use this as the "be
 | Charts | Human Metronome (top 10 consistent, >50 races), Reliability stacked bar (top clusters), Performance Matrix scatter (Points Per Race vs Win Rate) | 10, 12 |
 
 ## Known limitations (what the update fixes)
-1. Points are raw across eras (8-10 for a win early on, 25 from 2010), which inflates the modern x-axis and skews clusters. Raised by Ian Wright, who suggested normalising to a single points system.
+1. Points are raw across eras (8-10 for a win early on, 25 from 2010), which inflates the modern x-axis and skews clusters. Raised by a reader.
 2. Consistency is raw ms, so track length and era affect it.
 3. k=4 is a choice, not validated.
 4. DNF "NLP" is keyword matching, not NLP.
