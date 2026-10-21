@@ -239,6 +239,11 @@
         "Mechanical DNF Rate": -0.06923583541837738,
         "Teammate Delta": 1.0
       }
+    },
+    "rescored_correlation": {
+      "Avg Finish Pct": 0.9154616564118867,
+      "Podium Rate": 0.9693079869662378,
+      "Win Rate": 0.8264260086994223
     }
   }
 }

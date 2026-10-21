@@ -5,6 +5,7 @@ import pytest
 from f1.features import (
     MAX_PACE_RATIO,
     add_finish_pct,
+    add_rescored_points,
     build_master,
     cluster_drivers,
     driver_performance_table,
@@ -42,12 +43,41 @@ def test_build_master_adds_name_numeric_points_and_finish_pct(results, drivers, 
     assert master["points"].notna().all()
 
 
+def test_rescored_points_use_one_scheme_regardless_of_original_points():
+    results = pd.DataFrame({"raceId": [1] * 12, "positionOrder": list(range(1, 13))})
+    out = add_rescored_points(results)
+    assert out["rescored_points"].tolist() == [25, 18, 15, 12, 10, 8, 6, 4, 2, 1, 0, 0]
+
+
+def test_rescored_points_ignore_raw_points_column(results):
+    out = add_rescored_points(results)
+    assert out.loc[out.positionOrder == 1, "rescored_points"].eq(25).all()
+
+
+def test_rescored_points_do_not_mutate_input(results):
+    before = results.copy()
+    add_rescored_points(results)
+    pd.testing.assert_frame_equal(results, before)
+
+
+def test_build_master_adds_rescored_points(results, drivers, status):
+    master = build_master(results, drivers, status)
+    assert master.loc[master.positionOrder == 2, "rescored_points"].eq(18).all()
+
+
+def test_driver_performance_table_rescored_points_per_race():
+    table = driver_performance_table(_master(25), min_races=20).set_index("Driver Name")
+    assert table.loc["Winner", "Rescored Points"] == 25 * 25
+    assert table.loc["Winner", "Rescored PPR"] == 25
+    assert table.loc["Back", "Rescored PPR"] == 15
+
+
 def _master(n_races):
     rows = []
     for race in range(n_races):
         for pos, driver in enumerate(["Winner", "Mid", "Back"], start=1):
             rows.append({"raceId": race, "driver_name": driver, "positionOrder": pos})
-    return add_finish_pct(pd.DataFrame(rows))
+    return add_rescored_points(add_finish_pct(pd.DataFrame(rows)))
 
 
 def test_driver_performance_table_filters_by_min_races():

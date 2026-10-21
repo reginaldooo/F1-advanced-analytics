@@ -4,7 +4,7 @@
 How can drivers from different eras (e.g. Fangio vs Verstappen) be compared fairly?
 
 ## Data
-Kaggle "Formula 1 World Championship (1950-2020)" by Rohan Rao (`drivers`, `results`, `status`, `lap_times`).
+Kaggle "Formula 1 World Championship (1950-2024)" by Rohan Rao (`drivers`, `results`, `status`, `lap_times`).
 Not redistributed in this repo; `f1.data.load_tables()` reads `./data`, `$F1_DATA_DIR`, or downloads it with `kagglehub`.
 Lap times start in 1996 (589,081 rows), so the consistency metric covers 107 modern drivers only.
 
@@ -12,7 +12,8 @@ Lap times start in 1996 (589,081 rows), so the consistency metric covers 107 mod
 - **Finish percentile:** `1 - (positionOrder - 1) / (starters - 1)` per race, averaged per driver. Independent of the points system and grid size.
 - **Win, podium and top-5 rate.**
 - **Pace consistency:** each lap divided by its race median; laps above 107% of the median are dropped; std per driver-race, averaged per driver. Independent of circuit length.
-- Raw points are not used because scoring changed many times (a win was 8 points in 1950, 25 today).
+- Raw points are not used because scoring changed many times (a win was 8 points in 1950, 25 today). Raised by Ian Wright, who suggested normalising to a single points system.
+- **Sensitivity check, one points system:** every race is rescored with 25-18-15-12-10-8-6-4-2-1 (no fastest-lap point, no sprints) and averaged per race (`Rescored PPR`). It is not a clustering feature. Correlation with the clustering features is in `app/data/metrics.json` (`profile.rescored_correlation`): 0.92 finish percentile, 0.97 podium rate (partly by construction), 0.83 win rate. Spearman rank correlations are 0.94, 0.93 and 0.84. Re-clustering on `Rescored PPR` alone (K-Means, k=4) gives an adjusted Rand index of 0.62 against the published tiers: 9 of 10 Dominant Legends stay, Moss drops out, and Farina, Gonzalez, Hawthorn and Vettel move in. Rankings agree, but tier edges are sensitive to the feature choice. Caveats: only the top 10 score, about half of 1950s races have fewer than 10 classified finishers (median 11, lower in the 1960s), and shared drives each receive the full rescored points.
 
 ## Model
 K-Means (k=4, `RobustScaler`) on finish percentile, podium rate and win rate for drivers with more than 20 races. Clusters are named by mean win rate. k=4 was validated in `f1.clustering`: silhouette, Davies-Bouldin, elbow and seed stability (mean ARI over 10 seeds) for k=2..10, plus GMM and HDBSCAN comparisons. Silhouette/DB favour k=2 (too coarse); k=4 is the finest split with silhouette > 0.5 (0.54) and ARI = 0.98 (k=5: silhouette 0.43, ARI 0.56). GMM scores lower; HDBSCAN marks 66 of 246 drivers as noise, so the tiers segment a continuum rather than reveal natural groups. UMAP was skipped; PCA is used for the 2D view.

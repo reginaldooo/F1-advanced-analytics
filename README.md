@@ -30,14 +30,15 @@ Consistency is measured as the standard deviation of each lap time relative to t
 * The most consistent drivers with 50+ races are **Jos Verstappen, Christian Klien, Alexander Wurz, Johnny Herbert** and **Mika Salo** (Gerhard Berger is 7th). Almost all are midfielders or backmarkers.
 * **Mika Häkkinen** (93rd of 107), **Martin Brundle** (92nd) and **Michael Schumacher** (94th) rank near the bottom, the opposite of the earlier version of this analysis.
 * **Hamilton** (rank 80 of 107) and **Max Verstappen** (rank 63 of 107) sit in the lower half on consistency but top the era-neutral performance ranking.
-* **Insight:** A driver can be extremely consistent without being fast, and the fastest drivers are not the most metronomic.
+* **Insight:** A driver can be extremely consistent without being fast. Caveat: lap-time variance is also shaped by the car and the field (a midfield car running in traffic near the median has low variance), so low variance is not pure driver skill.
 * *Lap time data only exists from 1996, so this metric covers 107 drivers, not the full history.*
 
 ### 2. The "Legend" Tier is Exclusive
 Using K-Means Clustering on *Average Finish Percentile*, *Podium Rate* and *Win Rate* (all era-neutral, scaled with `RobustScaler`), only 10 of 246 drivers fall into the **"Dominant Legends"** category: Fangio, Ascari, Moss, Clark, Stewart, Prost, Senna, Schumacher, Hamilton and Verstappen.
 * **Why k=4:** silhouette and Davies-Bouldin favour k=2 (backmarkers vs everyone else), which is too coarse. k=4 is the finest split with silhouette above 0.5 (0.54) and near-perfect seed stability (ARI = 0.98); at k=5 silhouette drops to 0.43 and stability to 0.56. GMM scores lower, and HDBSCAN leaves 66 of 246 drivers (27%) unassigned, so the tiers are a segmentation of a continuum, not natural groups.
-* Raw points were dropped because the scoring system changed many times (a win was worth 8 points in 1950 and 25 today), which skewed the earlier clusters.
-* The model successfully identified high performing drivers who never won a championship as **"Podium Contenders,"** validating their skill level statistically despite the lack of titles.
+* Raw points were dropped because the scoring system changed many times (a win was worth 8 points in 1950 and 25 today), which skewed the earlier clusters. Thanks to Ian Wright, who suggested normalising to a single points system.
+* **Sensitivity check:** rescoring every race with one modern points scale gives points per race that rank drivers almost the same way (Spearman 0.94 vs finish percentile, 0.93 vs podium rate, 0.84 vs win rate). The tier edges are less stable. Clustering on rescored points alone gives an adjusted Rand index of 0.62 against the published tiers. Nine of the ten Dominant Legends stay, Moss drops out, and Farina, Gonzalez, Hawthorn and Vettel move in.
+* The model also groups drivers who never won a championship as **"Podium Contenders."** The tiers describe the data. They do not prove skill.
 
 ### 3. Reliability Analysis: Bad Luck vs. Aggression
 By classifying DNF (Did Not Finish) reasons, we tested historical reputations:
@@ -47,8 +48,9 @@ By classifying DNF (Did Not Finish) reasons, we tested historical reputations:
 
 ### 4. The Consistency Paradox
 Interestingly, the drivers with the absolute highest statistical consistency (lowest pace variance) are rarely World Champions.
-* **The "Safe Zone" Effect:** Extreme consistency often correlates with driving within a comfort zone (e.g. 95% capacity). To win titles like **Hamilton** or **Verstappen**, drivers must push the car to the absolute physical limit, which naturally introduces slight variance in lap times.
-* **Strategic Variation:** Elite drivers frequently alter their pace intentionally to manage tire degradation or fuel loads. This strategic adaptability negatively impacts their "consistency score" in the raw data but is essential for winning races.
+What the data shows is that none of the 20 most consistent drivers are champions. The explanations below are hypotheses, not findings, because the data has no mechanism behind them.
+* **Possible "Safe Zone" effect:** Extreme consistency may reflect driving within a comfort zone, while title contenders push closer to the limit, which adds lap-time variance.
+* **Possible strategic variation:** Elite drivers may alter pace on purpose to manage tyres or fuel, which would lower their "consistency score" without hurting results.
 
 ### 5. Which Criteria Actually Add Information?
 Beyond finish percentile and win/podium rate, each driver now has racecraft (positions gained), reliability (driver-error and mechanical DNF rates) and a teammate-relative score (finish percentile minus the other driver in the same car, 20+ shared races).
@@ -89,6 +91,7 @@ A Bradley-Terry model on race finishing order (151k pairwise comparisons) estima
 * **Data Cleaning:** Handling 70 years of inconsistent data (e.g., treating `\N` values, normalizing constructor names).
 * **Feature Engineering:**
     * *Average Finish Percentile*, *Podium Rate* & *Win Rate* for clustering (era-neutral, no raw points).
+    * *Rescored PPR*: every race rescored with one modern points scale, used only as a sensitivity check, not for clustering.
     * *Standard Deviation* of lap pace relative to the race median (~589k lap records, laps > 107% of median removed).
     * *Status classification*: 139 hand-labelled statuses (`src/f1/status_labels.csv`) plus a TF-IDF + logistic regression fallback for unseen statuses (leave-one-out accuracy 91% vs 32% for the old keyword rules).
 * **Machine Learning:** K-Means Clustering (`sklearn`, `RobustScaler`, k=4) to create driver personas.

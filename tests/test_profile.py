@@ -6,6 +6,7 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 import pytest  # noqa: E402
 
+from f1.features import MODERN_POINTS  # noqa: E402
 from f1.profile import (  # noqa: E402
     PROFILE_CRITERIA,
     build_profile,
@@ -26,6 +27,7 @@ def _rows(driver, constructor, race, grid, pos, status="Finished", finish_pct=No
         "positionOrder": pos,
         "status": status,
         "finish_pct": finish_pct if finish_pct is not None else 1 - (pos - 1) / 3,
+        "rescored_points": dict(enumerate(MODERN_POINTS, start=1)).get(pos, 0),
     }
 
 

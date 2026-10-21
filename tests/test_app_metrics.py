@@ -88,11 +88,33 @@ def test_profile_metrics_reports_pc1_share_and_correlations():
             "Driver-Error DNF Rate": rng.normal(size=60),
             "Mechanical DNF Rate": rng.normal(size=60),
             "Teammate Delta": rng.normal(size=60),
+            "Rescored PPR": base + rng.normal(0, 0.1, 60),
         }
     )
     out = profile_metrics(profile)
     assert 0 < out["pc1_share"] <= 1
     assert out["correlation"]["Win Rate"]["Avg Finish Pct"] > 0.9
+
+
+def test_profile_metrics_reports_rescored_points_correlation_with_cluster_features():
+    rng = np.random.default_rng(2)
+    base = rng.normal(size=60)
+    noise = lambda: rng.normal(0, 0.1, 60)  # noqa: E731
+    profile = pd.DataFrame(
+        {
+            "Avg Finish Pct": base + noise(),
+            "Win Rate": base + noise(),
+            "Podium Rate": base + noise(),
+            "Positions Gained": rng.normal(size=60),
+            "Driver-Error DNF Rate": rng.normal(size=60),
+            "Mechanical DNF Rate": rng.normal(size=60),
+            "Teammate Delta": rng.normal(size=60),
+            "Rescored PPR": base + noise(),
+        }
+    )
+    out = profile_metrics(profile)["rescored_correlation"]
+    assert set(out) == {"Avg Finish Pct", "Win Rate", "Podium Rate"}
+    assert all(r > 0.9 for r in out.values())
 
 
 def test_write_and_read_metrics_round_trip_with_nan_as_null(tmp_path):

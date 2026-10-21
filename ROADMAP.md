@@ -11,6 +11,7 @@
 | 2.3 hand-labelled DNF statuses + trained fallback | done | `9026d81` |
 | 2.4 cross-era Bradley-Terry rating | done | `2acba7b` |
 | Phase 3 Streamlit app (built, tested locally) | done | `9a43031`, `22686a8` |
+| Rescored-points (single points system) sensitivity check | done | - |
 | Deploy on Streamlit Community Cloud | **manual**, see `docs/DEPLOY.md` | - |
 | Add app URL to README and LinkedIn post | after deploy | - |
 

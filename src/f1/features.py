@@ -12,6 +12,7 @@ MAX_PACE_RATIO = 1.07
 MIN_RACES = 20
 CLUSTER_FEATURES = ["Avg Finish Pct", "Podium Rate", "Win Rate"]
 CATEGORY_NAMES = ["Dominant Legends", "Podium Contenders", "Midfielders", "Backmarkers"]
+MODERN_POINTS = (25, 18, 15, 12, 10, 8, 6, 4, 2, 1)
 
 
 def add_finish_pct(results: pd.DataFrame) -> pd.DataFrame:
@@ -22,6 +23,17 @@ def add_finish_pct(results: pd.DataFrame) -> pd.DataFrame:
         starters=starters,
         finish_pct=1 - (results["positionOrder"] - 1) / denominator,
     )
+
+
+def add_rescored_points(
+    results: pd.DataFrame, scheme: tuple[int, ...] = MODERN_POINTS
+) -> pd.DataFrame:
+    """Add `rescored_points`: every race scored with one points scheme, whatever the era.
+
+    Ignores the original `points` column. No fastest-lap bonus, no sprints.
+    """
+    awarded = {place: pts for place, pts in enumerate(scheme, start=1)}
+    return results.assign(rescored_points=results["positionOrder"].map(awarded).fillna(0))
 
 
 def build_master(
@@ -42,7 +54,7 @@ def build_master(
         driver_name=master["forename"] + " " + master["surname"],
         points=pd.to_numeric(master["points"], errors="coerce").fillna(0),
     )
-    return add_finish_pct(master)
+    return add_rescored_points(add_finish_pct(master))
 
 
 def driver_performance_table(master: pd.DataFrame, min_races: int = MIN_RACES) -> pd.DataFrame:
@@ -58,6 +70,7 @@ def driver_performance_table(master: pd.DataFrame, min_races: int = MIN_RACES) -
             "Total Wins": ("win", "sum"),
             "Total Podiums": ("podium", "sum"),
             "Total Top5": ("top5", "sum"),
+            "Rescored Points": ("rescored_points", "sum"),
         }
     ).reset_index()
     stats = stats.rename(columns={"driver_name": "Driver Name"})
@@ -68,6 +81,7 @@ def driver_performance_table(master: pd.DataFrame, min_races: int = MIN_RACES) -
             "Win Rate": stats["Total Wins"] / races,
             "Podium Rate": stats["Total Podiums"] / races,
             "Top5 Rate": stats["Total Top5"] / races,
+            "Rescored PPR": stats["Rescored Points"] / races,
         }
     ).reset_index(drop=True)
 

@@ -15,6 +15,7 @@ import pandas as pd
 
 from f1.clustering import compare_algorithms, evaluate_k
 from f1.dnf import evaluate_classifiers, load_status_labels
+from f1.features import CLUSTER_FEATURES
 from f1.profile import redundancy
 from f1.rating import C_GRID, DEFAULT_C, Pairs, cross_validate, select_c
 
@@ -61,9 +62,17 @@ def rating_metrics(pairs: Pairs, folds: int = RATING_FOLDS) -> dict:
 
 
 def profile_metrics(profile: pd.DataFrame) -> dict:
-    """Criteria correlation matrix and the variance share of the first principal component."""
+    """Criteria correlation matrix, PC1 variance share, and rescored-points sensitivity check."""
     corr, variance = redundancy(profile)
-    return {"pc1_share": float(variance[0]), "correlation": corr.to_dict()}
+    rescored = {
+        feature: float(profile["Rescored PPR"].corr(profile[feature]))
+        for feature in CLUSTER_FEATURES
+    }
+    return {
+        "pc1_share": float(variance[0]),
+        "correlation": corr.to_dict(),
+        "rescored_correlation": rescored,
+    }
 
 
 def data_metrics(tables: dict, profile: pd.DataFrame, consistency: pd.DataFrame) -> dict:

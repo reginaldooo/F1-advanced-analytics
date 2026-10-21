@@ -62,7 +62,7 @@ def overview(metrics: dict) -> None:
     )
     _section("Data")
     cols = st.columns(3)
-    cols[0].metric("Race results", f"{data['results_rows']:,}")
+    cols[0].metric("Race results (incl. non-starters)", f"{data['results_rows']:,}")
     cols[1].metric("Lap times (1996+)", f"{data['lap_rows']:,}")
     cols[2].metric("Drivers profiled", data["drivers_profiled"])
 
@@ -86,6 +86,23 @@ def features(metrics: dict) -> None:
     st.markdown(
         "**Why not points:** a win paid 8 points in 1950 and 25 today, and the scale changed many "
         "times in between. Raw points would reward the era, not the driver."
+    )
+    _section("Sensitivity check: one points system")
+    rescored = metrics["profile"]["rescored_correlation"]
+    st.markdown(
+        "Suggested by Ian Wright: put every race on one points system. Every race in the dataset "
+        "(1950-2024) is rescored with the same modern scale (25-18-15-12-10-8-6-4-2-1, no "
+        "fastest-lap point, no sprints), then averaged per race. It is **not** used for the "
+        "tiers. Correlation with the clustering features: "
+        f"finish percentile **{rescored['Avg Finish Pct']:.2f}**, "
+        f"podium rate **{rescored['Podium Rate']:.2f}**, "
+        f"win rate **{rescored['Win Rate']:.2f}**. "
+        "The podium figure is partly by construction, since both reward the top three. "
+        "Rank order agrees closely (Spearman 0.94, 0.93 and 0.84), so the ranking is not an "
+        "artefact of dropping points. The tier *edges* are less stable. K-Means on rescored "
+        "points alone gives an adjusted Rand index of 0.62 against the published tiers. Nine of "
+        "the ten Dominant Legends stay. Moss drops out, and Farina, Gonzalez, Hawthorn and "
+        "Vettel move in."
     )
     _section("Pace consistency (1996 onwards)")
     st.latex(
@@ -318,6 +335,11 @@ def limits_and_data(metrics: dict) -> None:
 - DNF labels are hand-written by the author. Ambiguous ones (Damage, Debris, Physical, Retired,
   Stalled, seat-related) are labelled *Other*.
 - A driver with few races at a top team can be over-rated; the 20-race filter only partly helps.
+- The rescored-points check scores only the top 10. About half of 1950s races have fewer than 10
+  classified finishers (median 11), and the 1960s are lower (median 9), so low places score zero
+  through attrition. Shared drives each receive the full rescored points.
+- Tier edges are sensitive to the feature choice (see the rescored-points check). Treat the
+  tiers as a segmentation of a continuum, not as fixed groups.
 - Lap times start in 1996, so pace consistency covers modern drivers only.
 - Results describe the dataset. They are not causal claims about driver skill.
 """
